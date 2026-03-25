@@ -1,14 +1,40 @@
-const db = require('../config/db');
+const prisma = require('../config/db');
 
 /**
  * List all addresses for a user, default first.
  */
 exports.list = async (userId) => {
-  const [rows] = await db.query(
-    'SELECT ADDRESS_ID, LABEL, ADDRESS_LINE1, ADDRESS_LINE2, CITY, STATE, PINCODE, COUNTRY, IS_DEFAULT FROM ADDRESS WHERE CUSTOMER_ID = ? ORDER BY IS_DEFAULT DESC, ADDRESS_ID',
-    [userId]
-  );
-  return rows;
+  const addresses = await prisma.address.findMany({
+    where: { customerId: parseInt(userId) },
+    select: {
+      addressId: true,
+      label: true,
+      addressLine1: true,
+      addressLine2: true,
+      city: true,
+      state: true,
+      pincode: true,
+      country: true,
+      isDefault: true
+    },
+    orderBy: [
+      { isDefault: 'desc' },
+      { addressId: 'asc' }
+    ]
+  });
+
+  // Transform to match expected format
+  return addresses.map(addr => ({
+    ADDRESS_ID: addr.addressId,
+    LABEL: addr.label,
+    ADDRESS_LINE1: addr.addressLine1,
+    ADDRESS_LINE2: addr.addressLine2,
+    CITY: addr.city,
+    STATE: addr.state,
+    PINCODE: addr.pincode,
+    COUNTRY: addr.country,
+    IS_DEFAULT: addr.isDefault
+  }));
 };
 
 /**
@@ -22,32 +48,56 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
     throw err;
   }
 
-  const conn = await db.getConnection();
-  await conn.beginTransaction();
-  try {
+  return await prisma.$transaction(async (tx) => {
     if (isDefault) {
-      await conn.query('UPDATE ADDRESS SET IS_DEFAULT = 0 WHERE CUSTOMER_ID = ?', [userId]);
+      await tx.address.updateMany({
+        where: { customerId: parseInt(userId) },
+        data: { isDefault: false }
+      });
     }
-    const [r] = await conn.query(
-      `INSERT INTO ADDRESS (CUSTOMER_ID, LABEL, ADDRESS_LINE1, ADDRESS_LINE2, CITY, STATE, PINCODE, COUNTRY, IS_DEFAULT)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'India', ?)`,
-      [userId, label || 'Home', line1, line2 || null, city, state || '', pincode, isDefault ? 1 : 0]
-    );
-    await conn.commit();
-    return r.insertId;
-  } catch (e) {
-    await conn.rollback();
-    throw e;
-  } finally {
-    conn.release();
-  }
+
+    const address = await tx.address.create({
+      data: {
+        customerId: parseInt(userId),
+        label: label || 'Home',
+        addressLine1: line1,
+        addressLine2: line2 || null,
+        city,
+        state: state || '',
+        pincode,
+        country: 'India',
+        isDefault: Boolean(isDefault)
+      },
+      select: {
+        addressId: true
+      }
+    });
+
+    return address.addressId;
+  });
 };
 
 /**
  * Delete an address, verifying ownership first.
  */
 exports.remove = async (userId, addressId) => {
-  const [[a]] = await db.query(
+  const address = await prisma.address.findFirst({
+    where: {
+      addressId: parseInt(addressId),
+      customerId: parseInt(userId)
+    }
+  });
+
+  if (!address) {
+    const err = new Error('Address not found');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await prisma.address.delete({
+    where: { addressId: parseInt(addressId) }
+  });
+};
     'SELECT ADDRESS_ID FROM ADDRESS WHERE ADDRESS_ID = ? AND CUSTOMER_ID = ?',
     [addressId, userId]
   );

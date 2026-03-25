@@ -1,52 +1,112 @@
-const db = require('../config/db');
+const prisma = require('../config/db');
 
 /**
  * Get a paginated, filtered list of products.
  */
 exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
   const offset = (Number(page) - 1) * Number(limit);
-  let where = 'WHERE 1=1';
-  const params = [];
-  if (search)   { where += ' AND p.PRODUCT_DESC LIKE ?';    params.push(`%${search}%`); }
-  if (category) { where += ' AND p.PRODUCT_CLASS_CODE = ?'; params.push(category); }
 
-  const [[{ total }]] = await db.query(
-    `SELECT COUNT(*) AS total FROM product p ${where}`,
-    params
-  );
-  const [products] = await db.query(
-    `SELECT p.PRODUCT_ID, p.PRODUCT_DESC, p.PRODUCT_CLASS_CODE,
-            p.PRODUCT_PRICE AS PRICE, p.PRODUCT_QUANTITY_AVAIL AS STOCK,
-            pc.PRODUCT_CLASS_DESC
-     FROM product p
-     JOIN product_class pc ON p.PRODUCT_CLASS_CODE = pc.PRODUCT_CLASS_CODE
-     ${where}
-     ORDER BY p.PRODUCT_ID DESC
-     LIMIT ? OFFSET ?`,
-    [...params, Number(limit), offset]
-  );
-  return { products, total, page: Number(page), pages: Math.ceil(total / Number(limit)) };
+  const where = {};
+  if (search) {
+    where.productDesc = {
+      contains: search
+    };
+  }
+  if (category) {
+    where.productClassCode = category;
+  }
+
+  const [total, products] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      include: {
+        productClass: {
+          select: {
+            productClassDesc: true
+          }
+        }
+      },
+      select: {
+        productId: true,
+        productDesc: true,
+        productClassCode: true,
+        productPrice: true,
+        productQuantityAvail: true,
+        productClass: {
+          select: {
+            productClassDesc: true
+          }
+        }
+      },
+      orderBy: {
+        productId: 'desc'
+      },
+      skip: offset,
+      take: Number(limit)
+    })
+  ]);
+
+  // Transform the data to match the expected format
+  const transformedProducts = products.map(product => ({
+    PRODUCT_ID: product.productId,
+    PRODUCT_DESC: product.productDesc,
+    PRODUCT_CLASS_CODE: product.productClassCode,
+    PRICE: product.productPrice,
+    STOCK: product.productQuantityAvail,
+    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
+  }));
+
+  return {
+    products: transformedProducts,
+    total,
+    page: Number(page),
+    pages: Math.ceil(total / Number(limit))
+  };
 };
 
 /**
  * Get a single product by ID.
  */
 exports.getById = async (productId) => {
-  const [[p]] = await db.query(
-    `SELECT p.PRODUCT_ID, p.PRODUCT_DESC, p.PRODUCT_CLASS_CODE,
-            p.PRODUCT_PRICE AS PRICE, p.PRODUCT_QUANTITY_AVAIL AS STOCK,
-            pc.PRODUCT_CLASS_DESC
-     FROM product p
-     JOIN product_class pc ON p.PRODUCT_CLASS_CODE = pc.PRODUCT_CLASS_CODE
-     WHERE p.PRODUCT_ID = ?`,
-    [productId]
-  );
-  if (!p) {
+  const product = await prisma.product.findUnique({
+    where: { productId: parseInt(productId) },
+    include: {
+      productClass: {
+        select: {
+          productClassDesc: true
+        }
+      }
+    },
+    select: {
+      productId: true,
+      productDesc: true,
+      productClassCode: true,
+      productPrice: true,
+      productQuantityAvail: true,
+      productClass: {
+        select: {
+          productClassDesc: true
+        }
+      }
+    }
+  });
+
+  if (!product) {
     const err = new Error('Product not found');
     err.statusCode = 404;
     throw err;
   }
-  return p;
+
+  // Transform to match expected format
+  return {
+    PRODUCT_ID: product.productId,
+    PRODUCT_DESC: product.productDesc,
+    PRODUCT_CLASS_CODE: product.productClassCode,
+    PRICE: product.productPrice,
+    STOCK: product.productQuantityAvail,
+    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
+  };
 };
 
 /**

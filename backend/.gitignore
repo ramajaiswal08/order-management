@@ -6,7 +6,8 @@ node_modules/
 # Environment variables
 .env
 
-
+# Prisma
+prisma/migrations/*/migration.sql
 
 # Build files
 dist/

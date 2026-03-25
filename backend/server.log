@@ -234,3 +234,11 @@
 2026-03-25T09:23:52.237Z [INFO] Login success: admin@example.com (Role: admin)
 2026-03-25T09:23:58.038Z [INFO] getMe: admin@example.com (Role: admin)
 2026-03-25T09:23:58.059Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T10:41:06.811Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T10:41:06.865Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T10:41:32.065Z [WARN] Failed login attempt for: rama@gmail.com
+2026-03-25T10:41:38.451Z [INFO] Login success: rama@gmail.com (Role: user)
+2026-03-25T10:42:08.148Z [INFO] Order created: 10165 for user 1
+2026-03-25T10:42:21.514Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T10:42:21.532Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T10:42:25.857Z [INFO] Order 10165 status updated to processing (1 row)

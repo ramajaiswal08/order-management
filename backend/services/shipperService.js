@@ -1,13 +1,28 @@
-const db = require('../config/db');
+const prisma = require('../config/db');
 
 /**
  * List all shippers.
  */
 exports.list = async () => {
-  const [shippers] = await db.query(
-    'SELECT SHIPPER_ID, SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS FROM shipper'
-  );
-  return shippers;
+  const shippers = await prisma.shipper.findMany({
+    select: {
+      shipperId: true,
+      shipperName: true,
+      shipperPhone: true,
+      shipperAddress: true
+    },
+    orderBy: {
+      shipperId: 'asc'
+    }
+  });
+
+  // Transform to match expected format
+  return shippers.map(shipper => ({
+    SHIPPER_ID: shipper.shipperId,
+    SHIPPER_NAME: shipper.shipperName,
+    SHIPPER_PHONE: shipper.shipperPhone,
+    SHIPPER_ADDRESS: shipper.shipperAddress
+  }));
 };
 
 /**
@@ -19,44 +34,60 @@ exports.create = async ({ SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
     err.statusCode = 400;
     throw err;
   }
-  const [r] = await db.query(
-    'INSERT INTO shipper (SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS) VALUES (?, ?, ?)',
-    [SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS || null]
-  );
-  return r.insertId;
+
+  const shipper = await prisma.shipper.create({
+    data: {
+      shipperName: SHIPPER_NAME,
+      shipperPhone: SHIPPER_PHONE,
+      shipperAddress: SHIPPER_ADDRESS || null
+    },
+    select: {
+      shipperId: true
+    }
+  });
+
+  return shipper.shipperId;
 };
 
 /**
  * Update a shipper by ID (admin only — enforced at route level).
  */
 exports.update = async (shipperId, { SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
-  const [[existing]] = await db.query(
-    'SELECT SHIPPER_ID FROM shipper WHERE SHIPPER_ID = ?',
-    [shipperId]
-  );
-  if (!existing) {
+  const existingShipper = await prisma.shipper.findUnique({
+    where: { shipperId: parseInt(shipperId) }
+  });
+
+  if (!existingShipper) {
     const err = new Error('Shipper not found');
     err.statusCode = 404;
     throw err;
   }
-  await db.query(
-    'UPDATE shipper SET SHIPPER_NAME = ?, SHIPPER_PHONE = ?, SHIPPER_ADDRESS = ? WHERE SHIPPER_ID = ?',
-    [SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS, shipperId]
-  );
+
+  await prisma.shipper.update({
+    where: { shipperId: parseInt(shipperId) },
+    data: {
+      shipperName: SHIPPER_NAME,
+      shipperPhone: SHIPPER_PHONE,
+      shipperAddress: SHIPPER_ADDRESS
+    }
+  });
 };
 
 /**
  * Delete a shipper by ID (admin only — enforced at route level).
  */
 exports.remove = async (shipperId) => {
-  const [[existing]] = await db.query(
-    'SELECT SHIPPER_ID FROM shipper WHERE SHIPPER_ID = ?',
-    [shipperId]
-  );
-  if (!existing) {
+  const existingShipper = await prisma.shipper.findUnique({
+    where: { shipperId: parseInt(shipperId) }
+  });
+
+  if (!existingShipper) {
     const err = new Error('Shipper not found');
     err.statusCode = 404;
     throw err;
   }
-  await db.query('DELETE FROM shipper WHERE SHIPPER_ID = ?', [shipperId]);
+
+  await prisma.shipper.delete({
+    where: { shipperId: parseInt(shipperId) }
+  });
 };

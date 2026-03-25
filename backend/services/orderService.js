@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const prisma = require('../config/db');
 const logger = require('../utils/logger');
 
 /**
@@ -13,21 +13,20 @@ exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) 
   }
 
   // Verify the address belongs to this user (prevents IDOR)
-  const [[addr]] = await db.query(
-    'SELECT ADDRESS_ID FROM ADDRESS WHERE ADDRESS_ID = ? AND CUSTOMER_ID = ?',
-    [shippingAddressId, userId]
-  );
-  if (!addr) {
+  const address = await prisma.address.findFirst({
+    where: {
+      addressId: parseInt(shippingAddressId),
+      customerId: parseInt(userId)
+    }
+  });
+
+  if (!address) {
     const err = new Error('Shipping address not found');
     err.statusCode = 404;
     throw err;
   }
 
-  // Acquire connection only after validation passes
-  const conn = await db.getConnection();
-  await conn.beginTransaction();
-
-  try {
+  return await prisma.$transaction(async (tx) => {
     // Deduplicate items by productId
     const aggregatedItems = items.reduce((acc, it) => {
       const existing = acc.find((x) => x.productId === it.productId);
@@ -37,125 +36,222 @@ exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) 
     }, []);
 
     // Pick a shipper (round-robin by lowest ID — can be extended)
-    const [[shipper]] = await conn.query(
-      'SELECT SHIPPER_ID FROM shipper ORDER BY SHIPPER_ID LIMIT 1'
-    );
+    const shipper = await tx.shipper.findFirst({
+      orderBy: { shipperId: 'asc' },
+      select: { shipperId: true }
+    });
 
-    // 1. Insert order header
-    const [r] = await conn.query(
-      `INSERT INTO order_header
-         (CUSTOMER_ID, ORDER_DATE, ORDER_STATUS, PAYMENT_MODE, PAYMENT_DATE, ORDER_SHIPMENT_DATE, SHIPPER_ID, SHIPPING_ADDRESS_ID)
-       VALUES (?, NOW(), 'pending', ?, NOW(), DATE_ADD(NOW(), INTERVAL 2 DAY), ?, ?)`,
-      [userId, paymentMode || 'COD', shipper?.SHIPPER_ID ?? null, shippingAddressId]
-    );
-    const orderId = r.insertId;
+    // 1. Create order header
+    const order = await tx.orderHeader.create({
+      data: {
+        customerId: parseInt(userId),
+        orderDate: new Date(),
+        orderStatus: 'pending',
+        paymentMode: paymentMode || 'COD',
+        paymentDate: new Date(),
+        orderShipmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+        shipperId: shipper?.shipperId || null,
+        shippingAddressId: parseInt(shippingAddressId)
+      },
+      select: { orderId: true }
+    });
 
-    // 2. Bulk-insert order items (ON DUPLICATE KEY handles any residual dupes)
+    // 2. Create order items
+    const orderItems = aggregatedItems.map(item => ({
+      orderId: order.orderId,
+      productId: parseInt(item.productId),
+      productQuantity: item.quantity
+    }));
+
+    await tx.orderItem.createMany({
+      data: orderItems
+    });
+
+    // 3. Decrement stock for each product
     for (const item of aggregatedItems) {
-      await conn.query(
-        `INSERT INTO order_items (ORDER_ID, PRODUCT_ID, PRODUCT_QUANTITY)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE PRODUCT_QUANTITY = PRODUCT_QUANTITY + VALUES(PRODUCT_QUANTITY)`,
-        [orderId, item.productId, item.quantity]
-      );
+      await tx.product.update({
+        where: { productId: parseInt(item.productId) },
+        data: {
+          productQuantityAvail: {
+            decrement: item.quantity
+          }
+        }
+      });
     }
 
-    // 3. Decrement stock
-    for (const it of aggregatedItems) {
-      await conn.query(
-        'UPDATE product SET PRODUCT_QUANTITY_AVAIL = PRODUCT_QUANTITY_AVAIL - ? WHERE PRODUCT_ID = ?',
-        [it.quantity, it.productId]
-      );
-    }
-
-    await conn.commit();
-    logger.info(`Order created: ${orderId} for user ${userId}`);
-    return { orderId };
-  } catch (e) {
-    await conn.rollback();
-    throw e;
-  } finally {
-    conn.release();
-  }
+    logger.info(`Order created: ${order.orderId} for user ${userId}`);
+    return { orderId: order.orderId };
+  });
 };
 
 /**
  * Get all orders for a given user.
  */
 exports.getUserOrders = async (userId) => {
-  const [orders] = await db.query(
-    `SELECT oh.ORDER_ID, oh.ORDER_DATE, oh.ORDER_STATUS AS STATUS,
-            u.USERNAME, s.SHIPPER_NAME, s.SHIPPER_PHONE,
-            SUM(COALESCE(p.PRODUCT_PRICE, 0) * oi.PRODUCT_QUANTITY) AS TOTAL_AMOUNT,
-            GROUP_CONCAT(CONCAT(p.PRODUCT_DESC, ' x', oi.PRODUCT_QUANTITY) SEPARATOR ' | ') AS ITEMS
-     FROM order_header oh
-     LEFT JOIN users u        ON oh.CUSTOMER_ID = u.USER_ID
-     LEFT JOIN shipper s      ON oh.SHIPPER_ID  = s.SHIPPER_ID
-     INNER JOIN order_items oi ON oh.ORDER_ID   = oi.ORDER_ID
-     INNER JOIN product p      ON p.PRODUCT_ID  = oi.PRODUCT_ID
-     WHERE oh.CUSTOMER_ID = ?
-     GROUP BY oh.ORDER_ID
-     ORDER BY oh.ORDER_DATE DESC`,
-    [userId]
-  );
-  return orders;
+  const orders = await prisma.orderHeader.findMany({
+    where: { customerId: parseInt(userId) },
+    include: {
+      customer: {
+        select: { username: true }
+      },
+      shipper: {
+        select: { shipperName: true, shipperPhone: true }
+      },
+      orderItems: {
+        include: {
+          product: {
+            select: { productDesc: true, productPrice: true }
+          }
+        }
+      }
+    },
+    orderBy: { orderDate: 'desc' }
+  });
+
+  // Transform to match expected format
+  return orders.map(order => {
+    const totalAmount = order.orderItems.reduce((acc, item) => {
+      return acc + (Number(item.product.productPrice) * item.productQuantity);
+    }, 0);
+
+    const items = order.orderItems.map(item =>
+      `${item.product.productDesc} x${item.productQuantity}`
+    ).join(' | ');
+
+    return {
+      ORDER_ID: order.orderId,
+      ORDER_DATE: order.orderDate,
+      STATUS: order.orderStatus,
+      USERNAME: order.customer?.username,
+      SHIPPER_NAME: order.shipper?.shipperName,
+      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      TOTAL_AMOUNT: totalAmount,
+      ITEMS: items
+    };
+  });
 };
 
 /**
  * Get detailed view of a single order, scoped to the requesting user.
  */
 exports.getOrderDetails = async (orderId, userId) => {
-  const [[order]] = await db.query(
-    `SELECT oh.ORDER_ID, oh.ORDER_DATE, oh.ORDER_STATUS AS STATUS, oh.PAYMENT_MODE,
-            oh.ORDER_SHIPMENT_DATE, oh.SHIPPER_ID,
-            s.SHIPPER_NAME, s.SHIPPER_PHONE,
-            oh.SHIPPING_ADDRESS_ID,
-            a.ADDRESS_LINE1, a.ADDRESS_LINE2, a.CITY, a.STATE, a.PINCODE, a.COUNTRY,
-            u.USERNAME
-     FROM order_header oh
-     LEFT JOIN shipper s ON oh.SHIPPER_ID          = s.SHIPPER_ID
-     LEFT JOIN address a ON oh.SHIPPING_ADDRESS_ID = a.ADDRESS_ID
-     LEFT JOIN users u   ON oh.CUSTOMER_ID         = u.USER_ID
-     WHERE oh.ORDER_ID = ? AND oh.CUSTOMER_ID = ?`,
-    [orderId, userId]
-  );
+  const order = await prisma.orderHeader.findFirst({
+    where: {
+      orderId: parseInt(orderId),
+      customerId: parseInt(userId)
+    },
+    include: {
+      customer: {
+        select: { username: true }
+      },
+      shipper: {
+        select: { shipperId: true, shipperName: true, shipperPhone: true }
+      },
+      shippingAddress: {
+        select: {
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          state: true,
+          pincode: true,
+          country: true
+        }
+      },
+      orderItems: {
+        include: {
+          product: {
+            select: { productId: true, productDesc: true, productPrice: true }
+          }
+        }
+      }
+    }
+  });
+
   if (!order) {
     const err = new Error('Order not found');
     err.statusCode = 404;
     throw err;
   }
 
-  const [items] = await db.query(
-    `SELECT oi.PRODUCT_ID, oi.PRODUCT_QUANTITY, p.PRODUCT_DESC, p.PRODUCT_PRICE,
-            (p.PRODUCT_PRICE * oi.PRODUCT_QUANTITY) AS LINE_TOTAL
-     FROM order_items oi
-     JOIN product p ON oi.PRODUCT_ID = p.PRODUCT_ID
-     WHERE oi.ORDER_ID = ?`,
-    [orderId]
-  );
+  // Transform order items
+  const items = order.orderItems.map(item => ({
+    PRODUCT_ID: item.product.productId,
+    PRODUCT_QUANTITY: item.productQuantity,
+    PRODUCT_DESC: item.product.productDesc,
+    PRODUCT_PRICE: item.product.productPrice,
+    LINE_TOTAL: Number(item.product.productPrice) * item.productQuantity
+  }));
 
   const totalAmount = items.reduce((acc, i) => acc + Number(i.LINE_TOTAL), 0);
-  return { order: { ...order, TOTAL_AMOUNT: totalAmount }, items };
+
+  return {
+    order: {
+      ORDER_ID: order.orderId,
+      ORDER_DATE: order.orderDate,
+      STATUS: order.orderStatus,
+      PAYMENT_MODE: order.paymentMode,
+      ORDER_SHIPMENT_DATE: order.orderShipmentDate,
+      SHIPPER_ID: order.shipper?.shipperId,
+      SHIPPER_NAME: order.shipper?.shipperName,
+      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      SHIPPING_ADDRESS_ID: order.shippingAddressId,
+      ADDRESS_LINE1: order.shippingAddress?.addressLine1,
+      ADDRESS_LINE2: order.shippingAddress?.addressLine2,
+      CITY: order.shippingAddress?.city,
+      STATE: order.shippingAddress?.state,
+      PINCODE: order.shippingAddress?.pincode,
+      COUNTRY: order.shippingAddress?.country,
+      USERNAME: order.customer?.username,
+      TOTAL_AMOUNT: totalAmount
+    },
+    items
+  };
 };
 
 /**
  * Get all orders (admin only).
  */
 exports.getAllOrders = async () => {
-  const [orders] = await db.query(
-    `SELECT oh.ORDER_ID, oh.ORDER_DATE, oh.ORDER_STATUS AS STATUS,
-            u.USERNAME, s.SHIPPER_NAME, s.SHIPPER_PHONE,
-            SUM(COALESCE(p.PRODUCT_PRICE, 0) * oi.PRODUCT_QUANTITY) AS TOTAL_AMOUNT,
-            GROUP_CONCAT(CONCAT(p.PRODUCT_DESC, ' x', oi.PRODUCT_QUANTITY) SEPARATOR ' | ') AS ITEMS
-     FROM order_header oh
-     LEFT JOIN users u        ON oh.CUSTOMER_ID = u.USER_ID
-     LEFT JOIN shipper s      ON oh.SHIPPER_ID  = s.SHIPPER_ID
-     INNER JOIN order_items oi ON oh.ORDER_ID   = oi.ORDER_ID
-     INNER JOIN product p      ON p.PRODUCT_ID  = oi.PRODUCT_ID
-     GROUP BY oh.ORDER_ID
-     ORDER BY oh.ORDER_DATE DESC`
-  );
-  return orders;
+  const orders = await prisma.orderHeader.findMany({
+    include: {
+      customer: {
+        select: { username: true }
+      },
+      shipper: {
+        select: { shipperName: true, shipperPhone: true }
+      },
+      orderItems: {
+        include: {
+          product: {
+            select: { productDesc: true, productPrice: true }
+          }
+        }
+      }
+    },
+    orderBy: { orderDate: 'desc' }
+  });
+
+  // Transform to match expected format
+  return orders.map(order => {
+    const totalAmount = order.orderItems.reduce((acc, item) => {
+      return acc + (Number(item.product.productPrice) * item.productQuantity);
+    }, 0);
+
+    const items = order.orderItems.map(item =>
+      `${item.product.productDesc} x${item.productQuantity}`
+    ).join(' | ');
+
+    return {
+      ORDER_ID: order.orderId,
+      ORDER_DATE: order.orderDate,
+      STATUS: order.orderStatus,
+      USERNAME: order.customer?.username,
+      SHIPPER_NAME: order.shipper?.shipperName,
+      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      TOTAL_AMOUNT: totalAmount,
+      ITEMS: items
+    };
+  });
 };
 
 const VALID_STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -178,11 +274,12 @@ exports.updateStatus = async (orderId, rawStatus) => {
     throw err;
   }
 
-  const [result] = await db.query(
-    'UPDATE order_header SET ORDER_STATUS = ? WHERE ORDER_ID = ?',
-    [status, orderId]
-  );
-  logger.info(`Order ${orderId} status updated to ${status} (${result.affectedRows} row)`);
+  const result = await prisma.orderHeader.updateMany({
+    where: { orderId: parseInt(orderId) },
+    data: { orderStatus: status }
+  });
+
+  logger.info(`Order ${orderId} status updated to ${status} (${result.count} row)`);
   return status;
 };
 
@@ -190,18 +287,20 @@ exports.updateStatus = async (orderId, rawStatus) => {
  * Assign a shipper to an order (admin only).
  */
 exports.assignShipper = async (orderId, shipperId) => {
-  const [[shipper]] = await db.query(
-    'SELECT SHIPPER_ID FROM shipper WHERE SHIPPER_ID = ?',
-    [shipperId]
-  );
+  const shipper = await prisma.shipper.findUnique({
+    where: { shipperId: parseInt(shipperId) }
+  });
+
   if (!shipper) {
     const err = new Error('Shipper not found');
     err.statusCode = 404;
     throw err;
   }
-  await db.query(
-    'UPDATE order_header SET SHIPPER_ID = ? WHERE ORDER_ID = ?',
-    [shipperId, orderId]
-  );
+
+  await prisma.orderHeader.update({
+    where: { orderId: parseInt(orderId) },
+    data: { shipperId: parseInt(shipperId) }
+  });
+
   logger.info(`Shipper ${shipperId} assigned to order ${orderId}`);
 };

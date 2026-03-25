@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
@@ -16,47 +16,70 @@ exports.register = async ({ username, email, password }) => {
     throw err;
   }
 
-  const [[existing]] = await db.query(
-    'SELECT USER_ID FROM USERS WHERE EMAIL = ?',
-    [email]
-  );
-  if (existing) {
+  // Check if user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (existingUser) {
     const err = new Error('User already exists');
     err.statusCode = 400;
     throw err;
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const [r] = await db.query(
-    'INSERT INTO USERS (USERNAME, EMAIL, PASSWORD) VALUES (?, ?, ?)',
-    [username, email, hashed]
-  );
+
+  const user = await prisma.user.create({
+    data: {
+      username,
+      email,
+      password: hashed
+    },
+    select: {
+      userId: true,
+      username: true,
+      email: true,
+      role: true
+    }
+  });
 
   logger.info(`Registered new user: ${email}`);
-  const token = signToken({ id: r.insertId, role: 'user' });
-  return { token, user: { id: r.insertId, username, email, role: 'user' } };
+  const token = signToken({ id: user.userId, role: user.role });
+  return { token, user };
 };
 
 /**
  * Authenticate a user and return a JWT.
  */
 exports.login = async ({ email, password }) => {
-  const [[user]] = await db.query(
-    'SELECT USER_ID, USERNAME, EMAIL, PASSWORD, ROLE FROM USERS WHERE EMAIL = ?',
-    [email]
-  );
-  if (!user || !(await bcrypt.compare(password, user.PASSWORD))) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      userId: true,
+      username: true,
+      email: true,
+      password: true,
+      role: true
+    }
+  });
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     logger.warn(`Failed login attempt for: ${email}`);
     const err = new Error('Invalid credentials');
     err.statusCode = 401;
     throw err;
   }
 
-  logger.info(`Login success: ${email} (Role: ${user.ROLE})`);
-  const token = signToken({ id: user.USER_ID, role: user.ROLE });
+  logger.info(`Login success: ${email} (Role: ${user.role})`);
+  const token = signToken({ id: user.userId, role: user.role });
   return {
     token,
-    user: { id: user.USER_ID, username: user.USERNAME, email: user.EMAIL, role: user.ROLE },
+    user: {
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    }
   };
 };
 
@@ -64,20 +87,34 @@ exports.login = async ({ email, password }) => {
  * Fetch the current user from the DB and issue a fresh token (handles role changes).
  */
 exports.getMe = async (userId) => {
-  const [[user]] = await db.query(
-    'SELECT USER_ID, USERNAME, EMAIL, ROLE FROM USERS WHERE USER_ID = ?',
-    [userId]
-  );
+  const user = await prisma.user.findUnique({
+    where: { userId: parseInt(userId) },
+    select: {
+      userId: true,
+      username: true,
+      email: true,
+      role: true
+    }
+  });
+
   if (!user) {
     const err = new Error('User not found');
     err.statusCode = 404;
     throw err;
   }
 
-  logger.info(`getMe: ${user.EMAIL} (Role: ${user.ROLE})`);
-  const token = signToken({ id: user.USER_ID, role: user.ROLE });
+  logger.info(`getMe: ${user.email} (Role: ${user.role})`);
+  const token = signToken({ id: user.userId, role: user.role });
   return {
     token,
+    user: {
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    }
+  };
+};
     user: { id: user.USER_ID, username: user.USERNAME, email: user.EMAIL, role: user.ROLE },
   };
 };

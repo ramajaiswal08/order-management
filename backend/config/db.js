@@ -1,5 +1,4 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+const { PrismaClient } = require('@prisma/client');
 
 // Custom error class for database-related exceptions
 class DatabaseError extends Error {
@@ -10,32 +9,23 @@ class DatabaseError extends Error {
   }
 }
 
-// Validate required environment variables
-const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASS', 'DB_NAME'];
-for (const varName of requiredEnvVars) {
-  if (!process.env[varName]) {
-    throw new DatabaseError(`Missing required environment variable: ${varName}`, 'CONFIG_ERROR');
+// Initialize Prisma Client
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+});
+
+// Test database connection
+async function testConnection() {
+  try {
+    await prisma.$connect();
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error.message);
+    throw new DatabaseError(`Database connection failed: ${error.message}`, 'CONNECTION_ERROR');
   }
 }
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-});
+// Call test connection
+testConnection();
 
-// Test connection and handle errors with custom exceptions
-pool.getConnection()
-  .then(c => {
-    console.log('MySQL connected');
-    c.release();
-  })
-  .catch(e => {
-    throw new DatabaseError(`Database connection failed: ${e.message}`, 'CONNECTION_ERROR');
-  });
-
-module.exports = pool;
+module.exports = prisma;
