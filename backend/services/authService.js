@@ -1,6 +1,6 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
 const logger = require('../utils/logger');
 
 const signToken = (payload) =>
@@ -17,8 +17,8 @@ exports.register = async ({ username, email, password }) => {
   }
 
   // Check if user already exists
-  const existingUser = await prisma.users.findUnique({
-    where: { EMAIL: email }
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
   });
 
   if (existingUser) {
@@ -29,71 +29,79 @@ exports.register = async ({ username, email, password }) => {
 
   const hashed = await bcrypt.hash(password, 10);
 
-  const user = await prisma.users.create({
+  const user = await prisma.user.create({
     data: {
-      USERNAME: username,
-      EMAIL: email,
-      PASSWORD: hashed
+      username,
+      email,
+      password: hashed
     },
     select: {
-      USER_ID: true,
-      USERNAME: true,
-      EMAIL: true,
-      ROLE: true
+      userId: true,
+      username: true,
+      email: true,
+      role: true
     }
   });
 
   logger.info(`Registered new user: ${email}`);
-  const token = signToken({ id: user.USER_ID, role: user.ROLE });
-  return { token, user };
+  const token = signToken({ id: user.userId, role: user.role });
+  return {
+    token,
+    user: {
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    }
+  };
 };
 
 /**
  * Authenticate a user and return a JWT.
  */
 exports.login = async ({ email, password }) => {
-  const user = await prisma.users.findUnique({
-    where: { EMAIL: email },
+  const user = await prisma.user.findUnique({
+    where: { email },
     select: {
-      USER_ID: true,
-      USERNAME: true,
-      EMAIL: true,
-      PASSWORD: true,
-      ROLE: true
+      userId: true,
+      username: true,
+      email: true,
+      password: true,
+      role: true
     }
   });
 
-  if (!user || !(await bcrypt.compare(password, user.PASSWORD))) {
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     logger.warn(`Failed login attempt for: ${email}`);
     const err = new Error('Invalid credentials');
     err.statusCode = 401;
     throw err;
   }
 
-  logger.info(`Login success: ${email} (Role: ${user.ROLE})`);
-  const token = signToken({ id: user.USER_ID, role: user.ROLE });
+  logger.info(`Login success: ${email} (Role: ${user.role})`);
+  const token = signToken({ id: user.userId, role: user.role });
   return {
     token,
     user: {
-      id: user.USER_ID,
-      username: user.USERNAME,
-      email: user.EMAIL,
-      role: user.ROLE
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
     }
   };
 };
 
 /**
- * Fetch the current user from the DB and issue a fresh token
+ * Fetch the current user from the DB and issue a fresh token (handles role changes).
  */
 exports.getMe = async (userId) => {
-  const user = await prisma.users.findUnique({
-    where: { USER_ID: parseInt(userId) },
+  const user = await prisma.user.findUnique({
+    where: { userId: parseInt(userId) },
     select: {
-      USER_ID: true,
-      USERNAME: true,
-      EMAIL: true,
-      ROLE: true
+      userId: true,
+      username: true,
+      email: true,
+      role: true
     }
   });
 
@@ -103,15 +111,15 @@ exports.getMe = async (userId) => {
     throw err;
   }
 
-  logger.info(`getMe: ${user.EMAIL} (Role: ${user.ROLE})`);
-  const token = signToken({ id: user.USER_ID, role: user.ROLE });
+  logger.info(`getMe: ${user.email} (Role: ${user.role})`);
+  const token = signToken({ id: user.userId, role: user.role });
   return {
     token,
     user: {
-      id: user.USER_ID,
-      username: user.USERNAME,
-      email: user.EMAIL,
-      role: user.ROLE
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
     }
   };
 };

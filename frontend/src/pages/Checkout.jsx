@@ -59,7 +59,7 @@ const Checkout = () => {
       if (addressId === selectedAddress) {
         setSelectedAddress(refreshed.length > 0 ? refreshed[0].ADDRESS_ID : null);
       }
-      setAddressStatus('Address deleted');
+      setAddressStatus('Address removed');
       setTimeout(() => setAddressStatus(''), 2500);
     } catch (err) {
       setAddressStatus(err.response?.data?.message || 'Unable to delete address');
@@ -104,8 +104,13 @@ const Checkout = () => {
                 </label>
               </div>
               <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>Save Address</button>
-              {addressStatus && <p style={{ marginTop: '0.75rem', color: 'var(--accent)' }}>{addressStatus}</p>}
             </form>
+          )}
+
+          {addressStatus && (
+            <div className="glass-card" style={{ marginBottom: '1rem', border: '1px solid var(--accent)', color: 'var(--accent)', animation: 'fade-in 0.3s' }}>
+              {addressStatus}
+            </div>
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
