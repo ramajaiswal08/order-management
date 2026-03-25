@@ -98,13 +98,3 @@ exports.remove = async (userId, addressId) => {
     where: { addressId: parseInt(addressId) }
   });
 };
-    'SELECT ADDRESS_ID FROM ADDRESS WHERE ADDRESS_ID = ? AND CUSTOMER_ID = ?',
-    [addressId, userId]
-  );
-  if (!a) {
-    const err = new Error('Address not found');
-    err.statusCode = 404;
-    throw err;
-  }
-  await db.query('DELETE FROM ADDRESS WHERE ADDRESS_ID = ?', [addressId]);
-};

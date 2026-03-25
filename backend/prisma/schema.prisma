@@ -1,130 +1,109 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
-}
-
-model User {
-  userId    Int      @id @default(autoincrement()) @map("USER_ID")
-  username  String   @unique @db.VarChar(50)
-  password  String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(100)
-  role      Role     @default(user)
-  createdAt DateTime @default(now()) @map("CREATED_AT")
-
-  // Relations
-  addresses Address[]
-  orders    OrderHeader[]
-
-  @@map("USERS")
+  url      = env("DATABASE_URL")
 }
 
 model ProductClass {
-  productClassCode String @id @map("PRODUCT_CLASS_CODE") @db.VarChar(10)
-  productClassDesc String @map("PRODUCT_CLASS_DESC") @db.VarChar(100)
+  code             Int       @id @map("PRODUCT_CLASS_CODE")
+  productClassDesc String    @map("PRODUCT_CLASS_DESC")
+  products         Product[] @relation()
 
-  // Relations
-  products Product[]
-
-  @@map("PRODUCT_CLASS")
+  @@map("product_class")
 }
 
-model Product {
-  productId           Int     @id @map("PRODUCT_ID")
-  productDesc         String? @map("PRODUCT_DESC") @db.VarChar(60)
-  productClassCode    String? @map("PRODUCT_CLASS_CODE") @db.VarChar(10)
-  productPrice        Decimal @map("PRODUCT_PRICE") @db.Decimal(12, 2)
-  productQuantityAvail Int?   @map("PRODUCT_QUANTITY_AVAIL")
-  len                 Int?
-  width               Int?
-  height              Int?
-  weight              Decimal? @db.Decimal(10, 4)
 
-  // Relations
-  productClass ProductClass? @relation(fields: [productClassCode], references: [productClassCode])
-  orderItems   OrderItem[]
+model Product {
+  productId        Int      @id @map("PRODUCT_ID")
+  productDesc      String?  @map("PRODUCT_DESC") @db.VarChar(60)
+  productClassCode Int?     @map("PRODUCT_CLASS_CODE")
+  productPrice     Decimal? @map("PRODUCT_PRICE") @db.Decimal(12, 2)
+  productQuantityAvail Int? @map("PRODUCT_QUANTITY_AVAIL")
+  LEN              Int?
+  WIDTH            Int?
+  HEIGHT           Int?
+  WEIGHT           Decimal? @db.Decimal(10, 4)
+
+  orderItems OrderItem[]
+  productClass ProductClass? @relation(fields: [productClassCode], references: [code])
 
   @@map("product")
-  @@index([productClassCode])
-  @@index([productDesc])
 }
 
 model OrderHeader {
-  orderId            Int       @id @default(autoincrement()) @map("ORDER_ID")
-  customerId         Int?      @map("CUSTOMER_ID")
-  orderDate          DateTime? @map("ORDER_DATE")
-  orderStatus        String?   @map("ORDER_STATUS") @db.VarChar(10)
-  paymentMode        String?   @map("PAYMENT_MODE") @db.VarChar(20)
-  paymentDate        DateTime? @map("PAYMENT_DATE")
-  orderShipmentDate  DateTime? @map("ORDER_SHIPMENT_DATE")
-  shipperId          Int?      @map("SHIPPER_ID")
-  shippingAddressId  Int?      @map("SHIPPING_ADDRESS_ID")
+  orderId           Int       @id @default(autoincrement()) @map("ORDER_ID")
+  customerId        Int?      @map("CUSTOMER_ID")
+  orderDate         DateTime? @map("ORDER_DATE") @db.Date
+  orderStatus       String?   @map("ORDER_STATUS") @db.VarChar(10)
+  paymentMode       String?   @map("PAYMENT_MODE") @db.VarChar(20)
+  paymentDate       DateTime? @map("PAYMENT_DATE") @db.Date
+  orderShipmentDate DateTime? @map("ORDER_SHIPMENT_DATE") @db.Date
+  shipperId         Int?      @map("SHIPPER_ID")
+  shippingAddressId Int?      @map("SHIPPING_ADDRESS_ID")
 
-  // Relations
-  customer         User?           @relation(fields: [customerId], references: [userId])
-  shipper          Shipper?        @relation(fields: [shipperId], references: [shipperId])
-  shippingAddress  Address?        @relation(fields: [shippingAddressId], references: [addressId])
-  orderItems       OrderItem[]
+  shippingAddress address? @relation(fields: [shippingAddressId], references: [ADDRESS_ID])
+
+  orderItems OrderItem[]
+  shipper    Shipper?   @relation(fields: [shipperId], references: [shipperId])
 
   @@map("order_header")
-  @@index([customerId])
-  @@index([orderStatus])
-  @@index([orderDate])
 }
 
 model OrderItem {
-  orderId       Int @map("ORDER_ID")
-  productId     Int @map("PRODUCT_ID")
-  productQuantity Int @map("PRODUCT_QUANTITY")
+  orderId         Int @map("ORDER_ID")
+  productId       Int @map("PRODUCT_ID")
+  productQuantity Int? @map("PRODUCT_QUANTITY")
 
-  // Relations
   order   OrderHeader @relation(fields: [orderId], references: [orderId])
   product Product     @relation(fields: [productId], references: [productId])
 
-  @@id([orderId, productId])
+  @@id([orderId, productId])   // ✅ composite PK
   @@map("order_items")
 }
 
-model Address {
-  addressId    Int     @id @default(autoincrement()) @map("ADDRESS_ID")
-  customerId   Int?    @map("CUSTOMER_ID")
-  label        String? @default("Home") @map("LABEL") @db.VarChar(50)
-  addressLine1  String  @map("ADDRESS_LINE1") @db.VarChar(255)
-  addressLine2  String? @map("ADDRESS_LINE2") @db.VarChar(255)
-  city         String  @map("CITY") @db.VarChar(100)
-  state        String? @map("STATE") @db.VarChar(100)
-  pincode      String  @map("PINCODE") @db.VarChar(20)
-  country      String? @default("India") @map("COUNTRY") @db.VarChar(50)
-  isDefault    Boolean @default(false) @map("IS_DEFAULT")
-
-  // Relations
-  customer User?        @relation(fields: [customerId], references: [userId])
-  orders   OrderHeader[]
-
-  @@map("ADDRESS")
-  @@index([customerId])
-  @@index([isDefault])
-}
-
 model Shipper {
-  shipperId       Int     @id @default(autoincrement()) @map("SHIPPER_ID")
-  shipperName     String? @map("SHIPPER_NAME") @db.VarChar(100)
-  shipperPhone    String? @map("SHIPPER_PHONE") @db.VarChar(20)
-  shipperAddress  String? @map("SHIPPER_ADDRESS") @db.Text
+  shipperId      Int    @id @map("SHIPPER_ID")
+  shipperName    String? @map("SHIPPER_NAME") @db.VarChar(30)
+  shipperPhone   BigInt? @map("SHIPPER_PHONE")
+  shipperAddress Int?    @map("SHIPPER_ADDRESS")
 
-  // Relations
   orders OrderHeader[]
 
   @@map("shipper")
-  @@index([shipperName])
 }
 
-enum Role {
+model address {
+  ADDRESS_ID    Int      @id @default(autoincrement())
+  ADDRESS_LINE1 String?  @db.VarChar(50)
+  ADDRESS_LINE2 String?  @db.VarChar(50)
+  CITY          String?  @db.VarChar(30)
+  STATE         String?  @db.VarChar(30)
+  PINCODE       Int?
+  COUNTRY       String?  @db.VarChar(30)
+  CUSTOMER_ID   Int?
+  LABEL         String?  @default("Home") @db.VarChar(50)
+  IS_DEFAULT    Boolean? @default(false)
+
+  orders OrderHeader[]
+
+  @@map("address")
+}
+
+model users {
+  USER_ID    Int         @id @default(autoincrement())
+  USERNAME   String      @unique(map: "USERNAME") @db.VarChar(50)
+  EMAIL      String      @unique(map: "EMAIL") @db.VarChar(100)
+  PASSWORD   String      @db.VarChar(255)
+  ROLE       users_ROLE? @default(user)
+  CREATED_AT DateTime?   @default(now()) @db.Timestamp(0)
+
+  @@map("users")
+}
+
+enum users_ROLE {
   user
   admin
 }

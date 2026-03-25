@@ -13,20 +13,13 @@ exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
     };
   }
   if (category) {
-    where.productClassCode = category;
+    where.productClassCode = Number(category);
   }
 
   const [total, products] = await Promise.all([
     prisma.product.count({ where }),
     prisma.product.findMany({
       where,
-      include: {
-        productClass: {
-          select: {
-            productClassDesc: true
-          }
-        }
-      },
       select: {
         productId: true,
         productDesc: true,
@@ -47,37 +40,26 @@ exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
     })
   ]);
 
-  // Transform the data to match the expected format
-  const transformedProducts = products.map(product => ({
-    PRODUCT_ID: product.productId,
-    PRODUCT_DESC: product.productDesc,
-    PRODUCT_CLASS_CODE: product.productClassCode,
-    PRICE: product.productPrice,
-    STOCK: product.productQuantityAvail,
-    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
-  }));
-
   return {
-    products: transformedProducts,
+    products: products.map(p => ({
+      PRODUCT_ID: p.productId,
+      PRODUCT_DESC: p.productDesc,
+      PRODUCT_CLASS_CODE: p.productClassCode,
+      PRICE: p.productPrice,
+      STOCK: p.productQuantityAvail,
+      PRODUCT_CLASS_DESC: p.productClass?.productClassDesc
+    })),
     total,
     page: Number(page),
     pages: Math.ceil(total / Number(limit))
   };
 };
-
 /**
  * Get a single product by ID.
  */
 exports.getById = async (productId) => {
   const product = await prisma.product.findUnique({
-    where: { productId: parseInt(productId) },
-    include: {
-      productClass: {
-        select: {
-          productClassDesc: true
-        }
-      }
-    },
+    where: { productId: Number(productId) },
     select: {
       productId: true,
       productDesc: true,
@@ -98,7 +80,6 @@ exports.getById = async (productId) => {
     throw err;
   }
 
-  // Transform to match expected format
   return {
     PRODUCT_ID: product.productId,
     PRODUCT_DESC: product.productDesc,
@@ -113,12 +94,22 @@ exports.getById = async (productId) => {
  * Get all product categories with product count.
  */
 exports.getCategories = async () => {
-  const [cats] = await db.query(
-    `SELECT pc.PRODUCT_CLASS_CODE, pc.PRODUCT_CLASS_DESC, COUNT(p.PRODUCT_ID) AS count
-     FROM product_class pc
-     LEFT JOIN product p ON pc.PRODUCT_CLASS_CODE = p.PRODUCT_CLASS_CODE
-     GROUP BY pc.PRODUCT_CLASS_CODE, pc.PRODUCT_CLASS_DESC
-     ORDER BY pc.PRODUCT_CLASS_DESC`
-  );
-  return cats;
+  const cats = await prisma.productClass.findMany({
+    select: {
+      code: true,                 // use "code" instead of "productClassCode"
+      productClassDesc: true,
+      _count: {
+        select: { products: true }
+      }
+    },
+    orderBy: {
+      productClassDesc: 'asc'
+    }
+  });
+
+  return cats.map(cat => ({
+    PRODUCT_CLASS_CODE: cat.code,       // map "code" to PRODUCT_CLASS_CODE
+    PRODUCT_CLASS_DESC: cat.productClassDesc,
+    count: cat._count.products
+  }));
 };

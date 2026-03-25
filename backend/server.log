@@ -242,3 +242,9 @@
 2026-03-25T10:42:21.514Z [INFO] getMe: admin@example.com (Role: admin)
 2026-03-25T10:42:21.532Z [INFO] getMe: admin@example.com (Role: admin)
 2026-03-25T10:42:25.857Z [INFO] Order 10165 status updated to processing (1 row)
+2026-03-25T11:28:27.213Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T11:28:27.233Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T11:28:29.900Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T11:28:29.916Z [INFO] getMe: admin@example.com (Role: admin)
+2026-03-25T12:25:06.480Z [INFO] Registered new user: ramajaiswal829111@gmail.com
+2026-03-25T12:25:14.759Z [INFO] Login success: ramajaiswal829111@gmail.com (Role: user)
