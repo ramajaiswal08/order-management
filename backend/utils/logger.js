@@ -1,7 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
-const logFile = path.join(__dirname, '../server.log');
 
 /**
  * Async file + console logger.
@@ -10,16 +6,19 @@ const logFile = path.join(__dirname, '../server.log');
  */
 const logger = {
   _write(level, msg) {
-    const line = `${new Date().toISOString()} [${level}] ${msg}\n`;
-    // Non-blocking — never stalls the event loop
-    fs.appendFile(logFile, line, (err) => {
-      if (err) console.error('Logger write error:', err);
-    });
+    const line = `[${level}] ${msg}`;
+    if (level === 'ERROR') {
+      console.error(line);
+    } else if (level === 'WARN') {
+      console.warn(line);
+    } else {
+      console.log(line);
+    }
   },
 
-  info(msg)  { this._write('INFO',  msg); console.log(msg); },
-  warn(msg)  { this._write('WARN',  msg); console.warn(msg); },
-  error(msg) { this._write('ERROR', msg); console.error(msg); },
+  info(msg)  { this._write('INFO',  msg); },
+  warn(msg)  { this._write('WARN',  msg); },
+  error(msg) { this._write('ERROR', msg); },
 };
 
 module.exports = logger;
