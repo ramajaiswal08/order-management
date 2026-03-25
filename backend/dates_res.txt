@@ -1,0 +1,62 @@
+﻿node : node:internal/mo
+dules/cjs/loader:1386
+At line:1 char:1
++ node check_dates.js 
+> dates_output.txt 
+2>&1; type 
+dates_output.txt |  ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (node:internal   
+ /modules/cjs/loade    
+r:1386:String) [],     
+RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  throw err;
+  ^
+
+Error: Cannot find 
+module 'D:\Work\order-m
+anagement-app\order-man
+agement\backend\check_d
+ates.js'
+    at Function._resolv
+eFilename (node:interna
+l/modules/cjs/loader:13
+83:15)
+    at 
+defaultResolveImpl (nod
+e:internal/modules/cjs/
+loader:1025:19)
+    at 
+resolveForCJSWithHooks 
+(node:internal/modules/
+cjs/loader:1030:22)
+    at Function._load (
+node:internal/modules/c
+js/loader:1192:37)
+    at TracingChannel.t
+raceSync (node:diagnost
+ics_channel:322:14)
+    at wrapModuleLoad (
+node:internal/modules/c
+js/loader:237:24)
+    at Function.execute
+UserEntryPoint [as 
+runMain] (node:internal
+/modules/run_main:171:5
+)
+    at node:internal/ma
+in/run_main_module:36:4
+9 {
+  code: 
+'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v22.19.0

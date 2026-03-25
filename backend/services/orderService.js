@@ -105,7 +105,7 @@ exports.getUserOrders = async (userId) => {
         }
       }
     },
-    orderBy: { orderDate: 'desc' }
+    orderBy: { orderId: 'desc' }
   });
 
   // Transform to match expected format
@@ -228,7 +228,7 @@ exports.getAllOrders = async () => {
         }
       }
     },
-    orderBy: { orderDate: 'desc' }
+    orderBy: { orderId: 'desc' }
   });
 
   // Transform to match expected format

@@ -19,6 +19,7 @@ const StatusIcon = ({ status }) => {
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchOrders();
@@ -30,8 +31,13 @@ const Orders = () => {
   }, []);
 
   const fetchOrders = async () => {
-    const res = await api.get('/orders');
-    setOrders(res.data.orders);
+    try {
+      const res = await api.get('/orders');
+      setOrders(res.data.orders);
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load orders');
+    }
   };
 
   return (
@@ -48,7 +54,12 @@ const Orders = () => {
         </button>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {orders.length === 0 && <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No orders yet.</p>}
+        {error && (
+          <div className="glass-card" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
+        {orders.length === 0 && !error && <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No orders yet.</p>}
         {orders.map((o, i) => (
           <motion.div 
             key={o.ORDER_ID}
