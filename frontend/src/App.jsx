@@ -18,7 +18,7 @@ const Navbar = () => {
 
   return (
     <nav className="glass">
-      <Link to={user?.role === 'admin' ? '/admin' : '/'} className="brand" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none', fontFamily: 'Outfit' }}>
+      <Link to={user?.role === 'admin' ? '/admin' : '/admin'} className="brand" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none', fontFamily: 'Outfit' }}>
         OrderHub
       </Link>
       
@@ -98,6 +98,14 @@ const ProtectedRoute = ({ children, admin }) => {
   return children;
 };
 
+const HomeWithRedirect = () => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div style={{ textAlign: 'center', padding: '3rem' }}>Loading…</div>;
+  if (user?.role === 'admin') return <Navigate to="/admin" replace />;
+  return <Home />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -106,7 +114,7 @@ function App() {
           <Navbar />
           <div className="container">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeWithRedirect />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />

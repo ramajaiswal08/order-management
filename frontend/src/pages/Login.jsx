@@ -14,10 +14,10 @@ const Login = () => {
     e.preventDefault();
     try {
       const userData = await login(email, password);
-      if (userData.user.role === 'admin') {
-        navigate('/admin');
+      if (userData && userData.user && userData.user.role === 'admin') {
+        navigate('/admin', { replace: true });
       } else {
-        navigate('/');
+        navigate('/', { replace: true });
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const shipperController = require('../controller/shipperController');
-const authMiddleware = require('../middleware/auth');
+const authMiddleware    = require('../middleware/auth');
+const adminOnly         = require('../middleware/adminOnly');
 
-router.use(authMiddleware);
-router.get('/', shipperController.list);
-router.post('/', shipperController.create);
-router.patch('/:id', shipperController.update);
-router.delete('/:id', shipperController.delete);
+router.get('/',       authMiddleware,            shipperController.list);
+router.post('/',      authMiddleware, adminOnly, shipperController.create);
+router.patch('/:id',  authMiddleware, adminOnly, shipperController.update);
+router.delete('/:id', authMiddleware, adminOnly, shipperController.delete);
 
 module.exports = router;
