@@ -3,7 +3,6 @@
 # frontend/node_modules/
 # build/
 # .env
-# backend/.env
 
 
 # Ignore env files everywhere
