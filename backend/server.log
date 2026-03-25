@@ -1,0 +1,204 @@
+2026-03-24T04:18:55.040Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T04:18:55.066Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T04:18:55.086Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T04:18:55.091Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T04:56:09.122Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T04:56:09.149Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T04:56:09.161Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T04:56:09.167Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:00:29.001Z - Login attempt: rama@gmail.com
+2026-03-24T05:00:29.121Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T05:02:15.317Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:02:15.327Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:02:22.727Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:02:22.730Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:10:05.187Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:10:05.198Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:11:16.331Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:11:16.335Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:11:19.898Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:11:19.921Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:11:19.935Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:11:19.937Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:11:21.599Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:11:21.602Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:11:49.924Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:11:49.926Z - CreateOrder Error: Unknown column 'SHIPPING_ADDRESS_ID' in 'field list'
+2026-03-24T05:14:47.311Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:14:47.330Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:14:47.336Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:14:47.342Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:14:48.764Z - CreateOrder: User 1 - 2 items
+2026-03-24T05:14:48.794Z - Order Created: 10149
+2026-03-24T05:18:42.929Z - Login attempt: rama@gmail.com
+2026-03-24T05:18:43.029Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T05:25:33.588Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:25:33.611Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T05:25:33.627Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T05:25:33.631Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T06:09:06.906Z - Login attempt: rama@gmail.com
+2026-03-24T06:09:07.094Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T06:11:07.399Z - Login attempt: rama@gmail.com
+2026-03-24T06:11:07.543Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T06:13:15.886Z - Login attempt: rama@gmail.com
+2026-03-24T06:13:16.016Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T06:17:38.902Z - Login attempt: rama@gmail.com
+2026-03-24T06:17:38.994Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:09:07.392Z - Login attempt: rama@gmail.com
+2026-03-24T07:09:07.693Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:10:40.474Z - Login attempt: rama@gmail.com
+2026-03-24T07:10:40.675Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:11:22.493Z - Login attempt: rama@gmail.com
+2026-03-24T07:11:22.721Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:12:40.647Z - Login attempt: rama@gmail.com
+2026-03-24T07:12:40.844Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:12:48.819Z - Login attempt: rama@gmail.com
+2026-03-24T07:12:49.037Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:13:18.507Z - Login attempt: rama@gmail.com
+2026-03-24T07:13:18.718Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:14:08.144Z - Login attempt: rama@gmail.com
+2026-03-24T07:14:08.412Z - Login success: rama@gmail.com (Role: user)
+2026-03-24T07:35:42.227Z - Register attempt: john@example.com
+2026-03-24T07:35:53.276Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T07:35:53.374Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T07:35:53.408Z - getMe: User ID 1 (Token Role: user)
+2026-03-24T07:35:53.413Z - getMe success: rama@gmail.com (DB Role: user)
+2026-03-24T07:36:11.840Z - Register attempt: john@example.com
+2026-03-24T07:36:33.146Z - Register attempt: john@example.com
+2026-03-24T07:37:29.142Z - Register attempt: john@example.com
+2026-03-24T07:37:45.799Z - Login attempt: john@example.com
+2026-03-24T07:37:46.116Z - Login success: john@example.com (Role: user)
+2026-03-24T07:39:13.755Z - Register attempt: john@example.com
+2026-03-24T07:39:48.218Z - Login attempt: john@example.com
+2026-03-24T07:39:48.473Z - Login success: john@example.com (Role: user)
+2026-03-24T08:04:17.575Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:06:17.895Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:06:27.315Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:08:09.186Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:08:09.250Z - CreateOrder Error: Cannot add or update a child row: a foreign key constraint fails (`orders`.`order_header`, CONSTRAINT `fk_order_header_shipping_address` FOREIGN KEY (`SHIPPING_ADDRESS_ID`) REFERENCES `address` (`ADDRESS_ID`))
+2026-03-24T08:09:35.470Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:09:35.541Z - Order Created: 10151
+2026-03-24T08:12:57.030Z - Register attempt: john@example.com
+2026-03-24T08:12:57.214Z - Login attempt: john@example.com
+2026-03-24T08:12:57.486Z - Login success: john@example.com (Role: user)
+2026-03-24T08:13:29.439Z - Register attempt: john@example.com
+2026-03-24T08:13:29.552Z - Login attempt: john@example.com
+2026-03-24T08:13:29.788Z - Login success: john@example.com (Role: user)
+2026-03-24T08:13:54.882Z - Register attempt: john@example.com
+2026-03-24T08:20:34.784Z - Register attempt: john@example.com
+2026-03-24T08:20:34.965Z - Login attempt: john@example.com
+2026-03-24T08:20:35.239Z - Login success: john@example.com (Role: user)
+2026-03-24T08:20:35.614Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:20:59.513Z - Login attempt: john@example.com
+2026-03-24T08:20:59.718Z - Login success: john@example.com (Role: user)
+2026-03-24T08:20:59.978Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:22:04.829Z - Login attempt: john@example.com
+2026-03-24T08:22:05.009Z - Login success: john@example.com (Role: user)
+2026-03-24T08:24:14.035Z - Login attempt: john@example.com
+2026-03-24T08:24:14.376Z - Login success: john@example.com (Role: user)
+2026-03-24T08:25:15.772Z - Login attempt: john@example.com
+2026-03-24T08:25:15.986Z - Login success: john@example.com (Role: user)
+2026-03-24T08:26:22.977Z - Login attempt: john@example.com
+2026-03-24T08:26:23.180Z - Login success: john@example.com (Role: user)
+2026-03-24T08:26:25.879Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:26:25.944Z - Order Created: 10152
+2026-03-24T08:28:00.159Z - Login attempt: john@example.com
+2026-03-24T08:28:00.381Z - Login success: john@example.com (Role: user)
+2026-03-24T08:28:02.816Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:28:02.829Z - Order Created: 10153
+2026-03-24T08:28:31.464Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:28:31.485Z - Order Created: 10154
+2026-03-24T08:28:32.695Z - Login attempt: john@example.com
+2026-03-24T08:28:32.971Z - Login success: john@example.com (Role: user)
+2026-03-24T08:29:09.034Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:29:09.068Z - Order Created: 10155
+2026-03-24T08:29:09.981Z - Login attempt: john@example.com
+2026-03-24T08:29:10.182Z - Login success: john@example.com (Role: user)
+2026-03-24T08:30:24.124Z - Login attempt: john@example.com
+2026-03-24T08:30:24.385Z - Login success: john@example.com (Role: user)
+2026-03-24T08:30:27.513Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:30:27.526Z - Order Created: 10156
+2026-03-24T08:31:00.136Z - Login attempt: john@example.com
+2026-03-24T08:31:00.352Z - Login success: john@example.com (Role: user)
+2026-03-24T08:31:02.148Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:31:02.178Z - Order Created: 10157
+2026-03-24T08:31:06.130Z - Login attempt: john@example.com
+2026-03-24T08:31:06.307Z - Login success: john@example.com (Role: user)
+2026-03-24T08:31:08.536Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:31:08.550Z - Order Created: 10158
+2026-03-24T08:31:24.742Z - Login attempt: john@example.com
+2026-03-24T08:31:24.953Z - Login success: john@example.com (Role: user)
+2026-03-24T08:31:27.378Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:31:27.394Z - Order Created: 10159
+2026-03-24T08:33:37.302Z - Login attempt: john@example.com
+2026-03-24T08:33:37.578Z - Login success: john@example.com (Role: user)
+2026-03-24T08:33:41.099Z - CreateOrder: User 3 - 1 items
+2026-03-24T08:33:41.126Z - Order Created: 10160
+2026-03-24T08:34:14.070Z - getMe: User ID 3 (Token Role: user)
+2026-03-24T08:34:14.104Z - getMe success: john@example.com (DB Role: user)
+2026-03-24T08:34:14.127Z - getMe: User ID 3 (Token Role: user)
+2026-03-24T08:34:14.132Z - getMe success: john@example.com (DB Role: user)
+2026-03-24T09:17:14.884Z - Login attempt: john@example.com
+2026-03-24T09:17:15.114Z - Login success: john@example.com (Role: user)
+2026-03-24T09:17:17.287Z - CreateOrder: User 3 - 1 items
+2026-03-24T09:17:17.328Z - Order Created: 10161
+2026-03-24T09:26:21.176Z - Login attempt: john@example.com
+2026-03-24T09:26:21.362Z - Login success: john@example.com (Role: user)
+2026-03-24T09:26:23.123Z - CreateOrder: User 3 - 1 items
+2026-03-24T09:26:23.145Z - Order Created: 10162
+2026-03-25T04:17:35.421Z - getMe: User ID 3 (Token Role: user)
+2026-03-25T04:17:35.481Z - getMe success: john@example.com (DB Role: user)
+2026-03-25T04:17:35.496Z - getMe: User ID 3 (Token Role: user)
+2026-03-25T04:17:35.508Z - getMe success: john@example.com (DB Role: user)
+2026-03-25T04:21:04.917Z - CreateOrder: User 3 - 2 items
+2026-03-25T04:21:04.943Z - Order Created: 10163
+2026-03-25T04:21:22.980Z - getMe: User ID 3 (Token Role: user)
+2026-03-25T04:21:23.483Z - getMe success: john@example.com (DB Role: user)
+2026-03-25T04:21:23.497Z - getMe: User ID 3 (Token Role: user)
+2026-03-25T04:21:23.500Z - getMe success: john@example.com (DB Role: user)
+2026-03-25T04:21:37.409Z - Login attempt: admin@example.com
+2026-03-25T04:21:37.568Z - Login success: admin@example.com (Role: admin)
+2026-03-25T04:21:57.966Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10163 to shipping
+2026-03-25T04:21:57.986Z - Update result: 1 rows updated
+2026-03-25T04:22:05.560Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10012 to shipped
+2026-03-25T04:22:05.574Z - Update result: 1 rows updated
+2026-03-25T04:22:12.066Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10163 to delivered
+2026-03-25T04:22:12.076Z - Update result: 1 rows updated
+2026-03-25T04:22:15.708Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10163 to processing
+2026-03-25T04:22:15.715Z - Update result: 1 rows updated
+2026-03-25T04:22:28.070Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10068 to shipped
+2026-03-25T04:22:28.085Z - Update result: 1 rows updated
+2026-03-25T04:22:30.683Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10006 to shipped
+2026-03-25T04:22:30.692Z - Update result: 1 rows updated
+2026-03-25T04:22:34.662Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10005 to processing
+2026-03-25T04:22:34.679Z - Update result: 1 rows updated
+2026-03-25T04:22:37.950Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10004 to shipped
+2026-03-25T04:22:37.963Z - Update result: 1 rows updated
+2026-03-25T04:22:40.660Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10003 to shipped
+2026-03-25T04:22:40.668Z - Update result: 1 rows updated
+2026-03-25T04:22:43.866Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10002 to shipped
+2026-03-25T04:22:43.895Z - Update result: 1 rows updated
+2026-03-25T04:22:47.157Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10070 to shipped
+2026-03-25T04:22:47.755Z - Update result: 1 rows updated
+2026-03-25T04:22:51.392Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10069 to shipping
+2026-03-25T04:22:51.399Z - Update result: 1 rows updated
+2026-03-25T04:22:53.769Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10058 to shipping
+2026-03-25T04:22:53.782Z - Update result: 1 rows updated
+2026-03-25T04:22:57.303Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10067 to processing
+2026-03-25T04:22:57.313Z - Update result: 1 rows updated
+2026-03-25T04:22:59.722Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10065 to processing
+2026-03-25T04:22:59.730Z - Update result: 1 rows updated
+2026-03-25T04:27:13.109Z - getMe: User ID 2 (Token Role: admin)
+2026-03-25T04:27:13.122Z - getMe success: admin@example.com (DB Role: admin)
+2026-03-25T04:27:13.131Z - getMe: User ID 2 (Token Role: admin)
+2026-03-25T04:27:13.136Z - getMe success: admin@example.com (DB Role: admin)
+2026-03-25T04:52:20.020Z - getMe: User ID 2 (Token Role: admin)
+2026-03-25T04:52:20.032Z - getMe success: admin@example.com (DB Role: admin)
+2026-03-25T04:52:20.040Z - getMe: User ID 2 (Token Role: admin)
+2026-03-25T04:52:20.042Z - getMe success: admin@example.com (DB Role: admin)
+2026-03-25T05:01:53.895Z - CreateOrder: User 2 - 3 items
+2026-03-25T05:01:53.947Z - Order Created: 10164
+2026-03-25T05:02:37.066Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10163 to shipping
+2026-03-25T05:02:37.090Z - Update result: 1 rows updated
+2026-03-25T05:02:41.650Z - UpdateStatus Attempt: User 2 (Role: admin) Order: 10164 to shipping
+2026-03-25T05:02:41.670Z - Update result: 1 rows updated

@@ -1,0 +1,10 @@
+# frontend/node_modules/
+# .env
+# *.local
+# .env.*
+# .build
+# dist/
+
+
+node_modules/
+.env

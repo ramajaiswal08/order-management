@@ -1,16 +1,12 @@
 backend/node_modules/
 backend/.env
 
-# Node modules
 node_modules/
 
 # Environment variables
 .env
 
-# Logs
-logs
-*.log
-npm-debug.log*
+
 
 # Build files
 dist/
