@@ -35,11 +35,11 @@ model Product {
 model OrderHeader {
   orderId           Int       @id @default(autoincrement()) @map("ORDER_ID")
   customerId        Int?      @map("CUSTOMER_ID")
-  orderDate         DateTime? @map("ORDER_DATE") @db.Date
+  orderDate         DateTime? @map("ORDER_DATE") @db.DateTime
   orderStatus       String?   @map("ORDER_STATUS") @db.VarChar(10)
   paymentMode       String?   @map("PAYMENT_MODE") @db.VarChar(20)
-  paymentDate       DateTime? @map("PAYMENT_DATE") @db.Date
-  orderShipmentDate DateTime? @map("ORDER_SHIPMENT_DATE") @db.Date
+  paymentDate       DateTime? @map("PAYMENT_DATE") @db.DateTime
+  orderShipmentDate DateTime? @map("ORDER_SHIPMENT_DATE") @db.DateTime
   shipperId         Int?      @map("SHIPPER_ID")
   shippingAddressId Int?      @map("SHIPPING_ADDRESS_ID")
 
