@@ -5,7 +5,8 @@ exports.list = async (req, res) => {
     const [shippers] = await db.query('SELECT * FROM shipper');
     res.json({ shippers });
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
 
@@ -18,7 +19,8 @@ exports.create = async (req, res) => {
     const [r] = await db.query('INSERT INTO shipper (SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS) VALUES (?, ?, ?)', [SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS || null]);
     res.status(201).json({ shipperId: r.insertId, message: 'Shipper added' });
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
 
@@ -29,7 +31,9 @@ exports.update = async (req, res) => {
     await db.query('UPDATE shipper SET SHIPPER_NAME = ?, SHIPPER_PHONE = ?, SHIPPER_ADDRESS = ? WHERE SHIPPER_ID = ?', [SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS, req.params.id]);
     res.json({ message: 'Shipper updated' });
   } catch (e) {
-    res.status(500).json({ message: e.message });
+
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
 
@@ -39,6 +43,7 @@ exports.delete = async (req, res) => {
     await db.query('DELETE FROM shipper WHERE SHIPPER_ID = ?', [req.params.id]);
     res.json({ message: 'Shipper removed' });
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
   }
 };

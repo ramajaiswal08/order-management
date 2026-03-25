@@ -20,7 +20,10 @@ exports.getAll = async (req, res) => {
       [...params, Number(limit), offset]
     );
     res.json({ products, total, page: Number(page), pages: Math.ceil(total / limit) });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) {
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.getById = async (req, res) => {
@@ -34,7 +37,10 @@ exports.getById = async (req, res) => {
     );
     if (!p) return res.status(404).json({ message: 'Product not found' });
     res.json({ product: p });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.getCategories = async (req, res) => {
@@ -48,5 +54,8 @@ exports.getCategories = async (req, res) => {
     );
 
     res.json({ categories: cats });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };

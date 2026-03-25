@@ -7,7 +7,9 @@ exports.list = async (req, res) => {
       [req.user.id]
     );
     res.json({ addresses: rows });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e){ console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+  }
 };
 
 exports.add = async (req, res) => {
@@ -23,7 +25,10 @@ exports.add = async (req, res) => {
       [req.user.id, label || 'Home', line1, line2 || null, city, state || '', pincode, isDefault ? 1 : 0]
     );
     res.status(201).json({ addressId: r.insertId, message: 'Address saved' });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.remove = async (req, res) => {
@@ -35,5 +40,8 @@ exports.remove = async (req, res) => {
     if (!a) return res.status(404).json({ message: 'Address not found' });
     await db.query('DELETE FROM ADDRESS WHERE ADDRESS_ID = ?', [req.params.id]);
     res.json({ message: 'Address deleted' });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };

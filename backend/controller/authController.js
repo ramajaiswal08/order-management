@@ -31,7 +31,8 @@ exports.register = async (req, res) => {
     res.status(201).json({ token, user: { id: r.insertId, username, email, role: 'user' } });
   } catch (e) { 
     logToFile(`Register Error: ${e.message}`);
-    res.status(500).json({ message: e.message }); 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
 
@@ -50,7 +51,8 @@ exports.login = async (req, res) => {
     res.json({ token, user: { id: user.USER_ID, username: user.USERNAME, email: user.EMAIL, role: user.ROLE } });
   } catch (e) { 
     logToFile(`Login Error: ${e.message}`);
-    res.status(500).json({ message: e.message }); 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' }); 
   }
 };
 
@@ -73,6 +75,7 @@ exports.getMe = async (req, res) => {
     });
   } catch (e) { 
     logToFile(`getMe Error: ${e.message}`);
-    res.status(500).json({ message: e.message }); 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
   }
 };

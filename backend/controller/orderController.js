@@ -62,7 +62,8 @@ exports.createOrder = async (req, res) => {
   } catch (e) {
     await conn.rollback();
     logToFile(`CreateOrder Error: ${e.message}`);
-    res.status(500).json({ message: e.message });
+    console.error(e);
+   res.status(500).json({ message: 'An internal server error occurred' });
   } finally {
     conn.release();
   }
@@ -87,7 +88,10 @@ exports.getUserOrders = async (req, res) => {
     );
     console.log('Orders for user', req.user.id, ':', orders);
     res.json({ orders });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.getOrderDetails = async (req, res) => {
@@ -118,7 +122,10 @@ exports.getOrderDetails = async (req, res) => {
 
     const totalAmount = items.reduce((acc, i) => acc + Number(i.LINE_TOTAL), 0);
     res.json({ order: { ...order, TOTAL_AMOUNT: totalAmount }, items });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.getAllOrders = async (req, res) => {
@@ -138,7 +145,10 @@ exports.getAllOrders = async (req, res) => {
        ORDER BY oh.ORDER_DATE DESC`
     );
     res.json({ orders });
-  } catch (e) { res.status(500).json({ message: e.message }); }
+  } catch (e) { 
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
+   }
 };
 
 exports.updateStatus = async (req, res) => {
@@ -162,7 +172,8 @@ exports.updateStatus = async (req, res) => {
     res.json({ message: 'Status updated', status });
   } catch (e) {
     logToFile(`UpdateStatus Error: ${e.message}`);
-    res.status(500).json({ message: e.message });
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
 
@@ -178,6 +189,7 @@ exports.assignShipper = async (req, res) => {
     res.json({ message: 'Shipper assigned' });
   } catch (e) {
     logToFile(`AssignShipper Error: ${e.message}`);
-    res.status(500).json({ message: e.message });
+    console.error(e);
+ res.status(500).json({ message: 'An internal server error occurred' });
   }
 };
