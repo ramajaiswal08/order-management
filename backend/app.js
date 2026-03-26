@@ -69,3 +69,5 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   logger.info(`Server started on port ${PORT}`);
 });
+
+module.exports = app;
