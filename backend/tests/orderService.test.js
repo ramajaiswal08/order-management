@@ -36,8 +36,8 @@ describe('Order Service - Get User Orders', () => {
     const result = await orderService.getUserOrders(1);
 
     expect(result.orders.length).toBeGreaterThan(0);
-   expect(result.orders[0].ORDER_STATUS).toBe('DELIVERED');
-expect(result.orders[0].CUSTOMER.username).toBe('Rama');
+   expect(result.orders[0].STATUS).toBe('DELIVERED');
+expect(result.orders[0].USERNAME).toBe('Rama');
   });
 
   it('should return empty array if no orders', async () => {

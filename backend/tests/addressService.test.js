@@ -2,6 +2,8 @@ jest.mock('../config/db', () => ({
   address: {
     findMany: jest.fn(),
     findFirst: jest.fn(),
+    create: jest.fn(),
+    updateMany: jest.fn(),
     update: jest.fn(),
   },
   $transaction: jest.fn((callback) => callback({
@@ -12,6 +14,7 @@ jest.mock('../config/db', () => ({
   }))
 }));
 
+const prisma = require('../config/db');
 const addressService = require('../services/addressService');
 
 describe('Address Service - Add', () => {
@@ -28,5 +31,16 @@ describe('Address Service - Add', () => {
 
     expect(result).toBe(101);
   });
+  it('should soft delete address', async () => {
+  prisma.address.findFirst.mockResolvedValue({ addressId: 1 });
+  prisma.address.update.mockResolvedValue({});
+
+  await addressService.remove(1, 1);
+
+  expect(prisma.address.update).toHaveBeenCalledWith({
+    where: { addressId: 1 },
+    data: { isDeleted: true }
+  });
+});
 
 });
