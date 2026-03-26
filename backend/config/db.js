@@ -11,7 +11,6 @@ class DatabaseError extends Error {
 
 // Initialize Prisma Client
 const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL,
   log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
 });
 
@@ -30,3 +29,5 @@ async function testConnection() {
 // testConnection();
 
 module.exports = prisma;
+module.exports.DatabaseError = DatabaseError;
+testConnection();

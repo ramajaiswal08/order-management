@@ -1,6 +1,6 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
 const logger = require('../utils/logger');
 
 const signToken = (payload) =>
@@ -45,7 +45,15 @@ exports.register = async ({ username, email, password }) => {
 
   logger.info(`Registered new user: ${email}`);
   const token = signToken({ id: user.userId, role: user.role });
-  return { token, user };
+  return {
+    token,
+    user: {
+      id: user.userId,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    }
+  };
 };
 
 /**
@@ -113,8 +121,5 @@ exports.getMe = async (userId) => {
       email: user.email,
       role: user.role
     }
-  };
-};
-    user: { id: user.USER_ID, username: user.USERNAME, email: user.EMAIL, role: user.ROLE },
   };
 };

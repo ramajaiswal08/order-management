@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [shippers, setShippers] = useState([]);
   const [stats, setStats] = useState({ totalOrders: 0, revenue: 0 });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchOrders();
@@ -14,15 +15,25 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchShippers = async () => {
-    const res = await api.get('/shippers');
-    setShippers(res.data.shippers);
+    try {
+      const res = await api.get('/shippers');
+      setShippers(res.data.shippers);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const fetchOrders = async () => {
-    const res = await api.get('/orders/admin');
-    setOrders(res.data.orders);
-    const revenue = res.data.orders.reduce((acc, o) => acc + Number(o.TOTAL_AMOUNT), 0);
-    setStats({ totalOrders: res.data.orders.length, revenue });
+    try {
+      const res = await api.get('/orders/admin');
+      const fetchedOrders = res.data.orders || [];
+      setOrders(fetchedOrders);
+      const revenue = fetchedOrders.reduce((acc, o) => acc + Number(o.TOTAL_AMOUNT || 0), 0);
+      setStats({ totalOrders: fetchedOrders.length, revenue });
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load dashboard data');
+    }
   };
 
   const updateStatus = async (id, status) => {
@@ -43,6 +54,11 @@ const AdminDashboard = () => {
           <h2 style={{ fontSize: '1.75rem' }}>Dashboard Overview</h2>
         </div>
         <p style={{ color: 'var(--text-muted)' }}>Monitor store performance and manage customer orders.</p>
+        {error && (
+          <div className="glass-card" style={{ marginTop: '1rem', border: '1px solid var(--danger)', color: 'var(--danger)' }}>
+            {error}
+          </div>
+        )}
       </header>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4" style={{ marginBottom: '3rem' }}>

@@ -18,7 +18,7 @@ const Navbar = () => {
 
   return (
     <nav className="glass">
-      <Link to={user?.role === 'admin' ? '/admin' : '/admin'} className="brand" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none', fontFamily: 'Outfit' }}>
+      <Link to={user?.role === 'admin' ? '/admin' : '/'} className="brand" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none', fontFamily: 'Outfit' }}>
         OrderHub
       </Link>
       

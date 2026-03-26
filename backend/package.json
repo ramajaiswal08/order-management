@@ -18,7 +18,7 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/adapter-planetscale": "^7.5.0",
-    "@prisma/client": "^7.5.0",
+    "@prisma/client": "^5.22.0",
     "@prisma/config": "^7.5.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -28,6 +28,7 @@
     "express-validator": "^7.3.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.20.0"
+    "mysql2": "^3.20.0",
+    "prisma": "^5.22.0"
   }
 }
