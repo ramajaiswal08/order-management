@@ -85,31 +85,38 @@ exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) 
 };
 
 /**
- * Get all orders for a given user.
+ * Get all orders for a given user (paginated).
  */
-exports.getUserOrders = async (userId) => {
-  const orders = await prisma.orderHeader.findMany({
-    where: { customerId: parseInt(userId) },
-    include: {
-      customer: {
-        select: { username: true }
-      },
-      shipper: {
-        select: { shipperName: true, shipperPhone: true }
-      },
-      orderItems: {
-        include: {
-          product: {
-            select: { productDesc: true, productPrice: true }
+exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
+  const skip = (page - 1) * limit;
+
+  const [total, orders] = await Promise.all([
+    prisma.orderHeader.count({ where: { customerId: parseInt(userId) } }),
+    prisma.orderHeader.findMany({
+      where: { customerId: parseInt(userId) },
+      include: {
+        customer: {
+          select: { username: true }
+        },
+        shipper: {
+          select: { shipperName: true, shipperPhone: true }
+        },
+        orderItems: {
+          include: {
+            product: {
+              select: { productDesc: true, productPrice: true }
+            }
           }
         }
-      }
-    },
-    orderBy: { orderId: 'desc' }
-  });
+      },
+      orderBy: { orderId: 'desc' },
+      skip,
+      take: limit
+    })
+  ]);
 
   // Transform to match expected format
-  return orders.map(order => {
+  const data = orders.map(order => {
     const totalAmount = order.orderItems.reduce((acc, item) => {
       return acc + (Number(item.product.productPrice) * item.productQuantity);
     }, 0);
@@ -129,6 +136,13 @@ exports.getUserOrders = async (userId) => {
       ITEMS: items
     };
   });
+
+  return {
+    orders: data,
+    total,
+    page,
+    pages: Math.ceil(total / limit)
+  };
 };
 
 /**
@@ -209,30 +223,37 @@ exports.getOrderDetails = async (orderId, userId) => {
 };
 
 /**
- * Get all orders (admin only).
+ * Get all orders (admin only - paginated).
  */
-exports.getAllOrders = async () => {
-  const orders = await prisma.orderHeader.findMany({
-    include: {
-      customer: {
-        select: { username: true }
-      },
-      shipper: {
-        select: { shipperName: true, shipperPhone: true }
-      },
-      orderItems: {
-        include: {
-          product: {
-            select: { productDesc: true, productPrice: true }
+exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
+  const skip = (page - 1) * limit;
+
+  const [total, orders] = await Promise.all([
+    prisma.orderHeader.count(),
+    prisma.orderHeader.findMany({
+      include: {
+        customer: {
+          select: { username: true }
+        },
+        shipper: {
+          select: { shipperName: true, shipperPhone: true }
+        },
+        orderItems: {
+          include: {
+            product: {
+              select: { productDesc: true, productPrice: true }
+            }
           }
         }
-      }
-    },
-    orderBy: { orderId: 'desc' }
-  });
+      },
+      orderBy: { orderId: 'desc' },
+      skip,
+      take: limit
+    })
+  ]);
 
   // Transform to match expected format
-  return orders.map(order => {
+  const data = orders.map(order => {
     const totalAmount = order.orderItems.reduce((acc, item) => {
       return acc + (Number(item.product.productPrice) * item.productQuantity);
     }, 0);
@@ -252,6 +273,13 @@ exports.getAllOrders = async () => {
       ITEMS: items
     };
   });
+
+  return {
+    orders: data,
+    total,
+    page,
+    pages: Math.ceil(total / limit)
+  };
 };
 
 const VALID_STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];

@@ -13,14 +13,15 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userData = await login(email, password);
-      if (userData && userData.user && userData.user.role === 'admin') {
+      const res = await login(email, password);
+      // res is { success: true, data: { user, token } }
+      if (res.data.user && res.data.user.role === 'admin') {
         navigate('/admin', { replace: true });
       } else {
         navigate('/', { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.message || 'Login failed');
     }
   };
 

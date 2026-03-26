@@ -44,7 +44,7 @@ const Checkout = () => {
       if (res.data.addressId) setSelectedAddress(res.data.addressId);
       setTimeout(() => setAddressStatus(''), 2500);
     } catch (err) {
-      setAddressStatus(err.response?.data?.message || 'Unable to save address');
+      setAddressStatus(err.message || 'Unable to save address');
       setTimeout(() => setAddressStatus(''), 3000);
     }
   };
@@ -54,6 +54,7 @@ const Checkout = () => {
     try {
       await api.delete(`/addresses/${addressId}`);
       const res = await api.get('/addresses');
+      // res.data is { addresses }
       const refreshed = res.data.addresses;
       setAddresses(refreshed);
       if (addressId === selectedAddress) {
@@ -62,7 +63,7 @@ const Checkout = () => {
       setAddressStatus('Address removed');
       setTimeout(() => setAddressStatus(''), 2500);
     } catch (err) {
-      setAddressStatus(err.response?.data?.message || 'Unable to delete address');
+      setAddressStatus(err.message || 'Unable to delete address');
       setTimeout(() => setAddressStatus(''), 3000);
     }
   };
@@ -74,7 +75,7 @@ const Checkout = () => {
       clearCart();
       navigate('/orders');
     } catch (err) {
-      alert(err.response?.data?.message || 'Order failed');
+      alert(err.message || 'Order failed');
     }
   };
 

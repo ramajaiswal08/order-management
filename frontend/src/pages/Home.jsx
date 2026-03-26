@@ -2,24 +2,35 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
-import { Search, Filter, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingCart } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const { cart, addToCart, removeFromCart } = useCart();
   const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
+    setPage(1); // Reset to page 1 on search/category change
   }, [search, category]);
 
+  useEffect(() => {
+    fetchProducts();
+  }, [search, category, page]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const fetchProducts = async () => {
-    const res = await api.get(`/products?search=${search}&category=${category}`);
+    const res = await api.get(`/products?search=${search}&category=${category}&page=${page}&limit=12`);
     setProducts(res.data.products);
+    setPages(res.data.pages);
   };
 
   const fetchCategories = async () => {
@@ -152,6 +163,12 @@ const Home = () => {
           </motion.div>
         ))}
       </div>
+      
+      <Pagination 
+        page={page} 
+        pages={pages} 
+        onPageChange={(p) => setPage(p)} 
+      />
     </div>
   );
 };

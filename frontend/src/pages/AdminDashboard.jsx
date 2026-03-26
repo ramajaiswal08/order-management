@@ -2,21 +2,25 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Users, ShoppingBag, TrendingUp } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [shippers, setShippers] = useState([]);
   const [stats, setStats] = useState({ totalOrders: 0, revenue: 0 });
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
 
   useEffect(() => {
     fetchOrders();
     fetchShippers();
-  }, []);
+  }, [page]);
 
   const fetchShippers = async () => {
     try {
       const res = await api.get('/shippers');
+      // res is { success, data: { shippers } }
       setShippers(res.data.shippers);
     } catch (err) {
       console.error(err);
@@ -25,14 +29,20 @@ const AdminDashboard = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await api.get('/orders/admin');
+      const res = await api.get(`/orders/admin?page=${page}&limit=10`);
+      // res is { success, data: { orders, total, page, pages } }
       const fetchedOrders = res.data.orders || [];
       setOrders(fetchedOrders);
-      const revenue = fetchedOrders.reduce((acc, o) => acc + Number(o.TOTAL_AMOUNT || 0), 0);
-      setStats({ totalOrders: fetchedOrders.length, revenue });
+      
+      // We still use total from the response for stats
+      setStats({ 
+        totalOrders: res.data.total, 
+        revenue: fetchedOrders.reduce((acc, o) => acc + Number(o.TOTAL_AMOUNT || 0), 0) 
+      });
+      setPages(res.data.pages);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(err.message || 'Failed to load dashboard data');
     }
   };
 
@@ -138,6 +148,12 @@ const AdminDashboard = () => {
           </tbody>
         </table>
       </div>
+
+      <Pagination 
+        page={page} 
+        pages={pages} 
+        onPageChange={(p) => setPage(p)} 
+      />
     </div>
   );
 };

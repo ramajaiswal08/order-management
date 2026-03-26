@@ -37,15 +37,17 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/auth',      authRoutes);
-app.use('/api/addresses', addressRoutes);
-app.use('/api/products',  productRoutes);
-app.use('/api/orders',    orderRoutes);
-app.use('/api/shippers',  shipperRoutes);
+app.get('/', (req, res) => res.send('Order Management API v1 is LIVE'));
+app.get('/api/test', (req, res) => res.json({ success: true, message: 'API is reachable' }));
+app.use('/api/v1/auth',      authRoutes);
+app.use('/api/v1/addresses', addressRoutes);
+app.use('/api/v1/products',  productRoutes);
+app.use('/api/v1/orders',    orderRoutes);
+app.use('/api/v1/shippers',  shipperRoutes);
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ message: 'Resource not found' });
+  res.status(404).json({ success: false, error: 'Resource not found' });
 });
 
 // Global Error Handler
@@ -55,9 +57,9 @@ app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message    = err.message || 'Internal Server Error';
   
-  // Don't leak details in production
   res.status(statusCode).json({
-    message,
+    success: false,
+    error: message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });

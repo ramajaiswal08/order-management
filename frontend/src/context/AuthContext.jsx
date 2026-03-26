@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       api.get('/auth/me')
         .then(res => {
+          // res is now response.data (standardized wrapper: { success, data })
           if (res.data.token) localStorage.setItem('token', res.data.token);
           setUser(res.data.user);
         })
@@ -24,9 +25,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
+    // res is now { success, data }
     localStorage.setItem('token', res.data.token);
     setUser(res.data.user);
-    return res.data;
+    return res;
   };
 
   const logout = () => {

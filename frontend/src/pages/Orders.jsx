@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 import { motion } from 'framer-motion';
 import { Package, Clock, CheckCircle, Truck, XCircle } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 const StatusIcon = ({ status }) => {
   const normalized = (status || '').toLowerCase();
@@ -20,23 +21,26 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
 
   useEffect(() => {
     fetchOrders();
     const interval = setInterval(() => {
       setRefreshing(true);
-      fetchOrders().finally(() => setRefreshing(false));
-    }, 5000);
+      fetchOrders(page).finally(() => setRefreshing(false));
+    }, 10000); // Increased interval to 10s to reduce noise
     return () => clearInterval(interval);
-  }, []);
+  }, [page]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (targetPage = page) => {
     try {
-      const res = await api.get('/orders');
+      const res = await api.get(`/orders?page=${targetPage}&limit=10`);
       setOrders(res.data.orders);
+      setPages(res.data.pages);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load orders');
+      setError(err.message || 'Failed to load orders');
     }
   };
 
@@ -89,6 +93,12 @@ const Orders = () => {
           </motion.div>
         ))}
       </div>
+      
+      <Pagination 
+        page={page} 
+        pages={pages} 
+        onPageChange={(p) => setPage(p)} 
+      />
     </div>
   );
 };
