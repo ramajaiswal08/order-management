@@ -1,18 +1,17 @@
 const prisma = require('../config/db');
 const logger = require('../utils/logger');
 
-/**
- * Create a new order inside a transaction.
- * Validates input, picks a shipper, inserts header + items, decrements stock.
- */
-exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) => {
+
+ function validateOrderInput(userId, items, shippingAddressId) {
   if (!items?.length || !shippingAddressId) {
-    const err = new Error('Invalid order data: items and shippingAddressId are required');
+    logger.warn(`Invalid order data by user ${userId}`);
+    const err = new Error('Invalid order data');
     err.statusCode = 400;
     throw err;
   }
+}
 
-  // Verify the address belongs to this user (prevents IDOR)
+async function verifyAddress(userId, shippingAddressId) {
   const address = await prisma.address.findFirst({
     where: {
       addressId: parseInt(shippingAddressId),
@@ -21,69 +20,110 @@ exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) 
   });
 
   if (!address) {
+    logger.warn(`Address not found for user ${userId}`);
     const err = new Error('Shipping address not found');
     err.statusCode = 404;
     throw err;
   }
 
-  return await prisma.$transaction(async (tx) => {
-    // Deduplicate items by productId
-    const aggregatedItems = items.reduce((acc, it) => {
-      const existing = acc.find((x) => x.productId === it.productId);
-      if (existing) existing.quantity += it.quantity;
-      else acc.push({ productId: it.productId, quantity: it.quantity });
-      return acc;
-    }, []);
+  return address;
+}
 
-    // Pick a shipper (round-robin by lowest ID — can be extended)
-    const shipper = await tx.shipper.findFirst({
-      orderBy: { shipperId: 'asc' },
-      select: { shipperId: true }
-    });
+function aggregateItems(items) {
+  return items.reduce((acc, it) => {
+    const existing = acc.find(x => x.productId === it.productId);
+    if (existing) existing.quantity += it.quantity;
+    else acc.push({ productId: it.productId, quantity: it.quantity });
+    return acc;
+  }, []);
+}
 
-    // 1. Create order header
-    const order = await tx.orderHeader.create({
-      data: {
-        customerId: parseInt(userId),
-        orderDate: new Date(),
-        orderStatus: 'pending',
-        paymentMode: paymentMode || 'COD',
-        paymentDate: new Date(),
-        orderShipmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-        shipperId: shipper?.shipperId || null,
-        shippingAddressId: parseInt(shippingAddressId)
-      },
-      select: { orderId: true }
-    });
+async function getShipper(tx) {
+  return await tx.shipper.findFirst({
+    orderBy: { shipperId: 'asc' },
+    select: { shipperId: true }
+  });
+}
 
-    // 2. Create order items
-    const orderItems = aggregatedItems.map(item => ({
-      orderId: order.orderId,
+async function createOrderHeader(tx, userId, shippingAddressId, paymentMode, shipper) {
+  return await tx.orderHeader.create({
+    data: {
+      customerId: parseInt(userId),
+      orderDate: new Date(),
+      orderStatus: 'pending',
+      paymentMode: paymentMode || 'COD',
+      paymentDate: new Date(),
+      orderShipmentDate: new Date(Date.now() + 2 * 86400000),
+      shipperId: shipper?.shipperId || null,
+      shippingAddressId: parseInt(shippingAddressId)
+    },
+    select: { orderId: true }
+  });
+}
+
+async function createOrderItems(tx, orderId, items) {
+  await tx.orderItem.createMany({
+    data: items.map(item => ({
+      orderId,
       productId: parseInt(item.productId),
       productQuantity: item.quantity
-    }));
+    }))
+  });
+}
 
-    await tx.orderItem.createMany({
-      data: orderItems
-    });
-
-    // 3. Decrement stock for each product
-    for (const item of aggregatedItems) {
-      await tx.product.update({
-        where: { productId: parseInt(item.productId) },
-        data: {
-          productQuantityAvail: {
-            decrement: item.quantity
-          }
+async function updateStock(tx, items) {
+  for (const item of items) {
+    await tx.product.update({
+      where: { productId: parseInt(item.productId) },
+      data: {
+        productQuantityAvail: {
+          decrement: item.quantity
         }
-      });
-    }
+      }
+    });
+  }
+}
+
+exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) => {
+
+  // 1. Validate input
+  validateOrderInput(userId, items, shippingAddressId);
+
+  // 2. Verify address ownership
+  await verifyAddress(userId, shippingAddressId);
+
+  // 3. Run transaction
+  return await prisma.$transaction(async (tx) => {
+
+    // 4. Aggregate items
+    const aggregatedItems = aggregateItems(items);
+
+    // 5. Get shipper
+    const shipper = await getShipper(tx);
+
+    // 6. Create order header
+    const order = await createOrderHeader(
+      tx,
+      userId,
+      shippingAddressId,
+      paymentMode,
+      shipper
+    );
+
+    logger.info(`Order header created: ${order.orderId}`);
+
+    // 7. Create order items
+    await createOrderItems(tx, order.orderId, aggregatedItems);
+
+    // 8. Update stock
+    await updateStock(tx, aggregatedItems);
 
     logger.info(`Order created: ${order.orderId} for user ${userId}`);
+
     return { orderId: order.orderId };
   });
-};
-
+};    
+   
 /**
  * Get all orders for a given user (paginated).
  */

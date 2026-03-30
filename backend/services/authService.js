@@ -1,6 +1,6 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
 
 const signToken = (payload) =>
@@ -45,15 +45,7 @@ exports.register = async ({ username, email, password }) => {
 
   logger.info(`Registered new user: ${email}`);
   const token = signToken({ id: user.userId, role: user.role });
-  return {
-    token,
-    user: {
-      id: user.userId,
-      username: user.username,
-      email: user.email,
-      role: user.role
-    }
-  };
+  return { token, user };
 };
 
 /**
@@ -95,7 +87,7 @@ exports.login = async ({ email, password }) => {
  * Fetch the current user from the DB and issue a fresh token (handles role changes).
  */
 exports.getMe = async (userId) => {
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { userId: parseInt(userId) },
     select: {
       userId: true,

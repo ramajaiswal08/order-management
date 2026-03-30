@@ -1,16 +1,11 @@
 const prisma = require('../config/db');
-const logger = require('../utils/logger');
 
 /**
  * List all addresses for a user, default first.
- * Soft-deleted addresses are excluded.
  */
 exports.list = async (userId) => {
   const addresses = await prisma.address.findMany({
-    where: { 
-      customerId: parseInt(userId),
-      isDeleted: false 
-    },
+    where: { customerId: parseInt(userId) },
     select: {
       addressId: true,
       label: true,
@@ -28,7 +23,7 @@ exports.list = async (userId) => {
     ]
   });
 
-  // Transform keys for frontend compatibility
+  // Transform to match expected format
   return addresses.map(addr => ({
     ADDRESS_ID: addr.addressId,
     LABEL: addr.label,
@@ -44,7 +39,7 @@ exports.list = async (userId) => {
 
 /**
  * Add a new address for a user.
- * Wraps default-flag reset + insert in a transaction.
+ * Wraps default-flag update + insert in a transaction to avoid a race condition.
  */
 exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefault }) => {
   if (!line1 || !city || !pincode) {
@@ -69,11 +64,13 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
         addressLine2: line2 || null,
         city,
         state: state || '',
-        pincode: parseInt(pincode),
+        pincode,
         country: 'India',
         isDefault: Boolean(isDefault)
       },
-      select: { addressId: true }
+      select: {
+        addressId: true
+      }
     });
 
     return address.addressId;
@@ -81,15 +78,13 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
 };
 
 /**
- * Soft delete an address, verifying ownership first.
- * Deleting an address linked to an order is now safe as it's just a status change.
+ * Delete an address, verifying ownership first.
  */
 exports.remove = async (userId, addressId) => {
   const address = await prisma.address.findFirst({
     where: {
       addressId: parseInt(addressId),
-      customerId: parseInt(userId),
-      isDeleted: false
+      customerId: parseInt(userId)
     }
   });
 
@@ -99,11 +94,7 @@ exports.remove = async (userId, addressId) => {
     throw err;
   }
 
-  // Soft delete: keep the record but hide it from the UI
-  await prisma.address.update({
-    where: { addressId: parseInt(addressId) },
-    data: { isDeleted: true }
+  await prisma.address.delete({
+    where: { addressId: parseInt(addressId) }
   });
-  
-  logger.info(`User ${userId} soft-deleted address ${addressId}`);
 };

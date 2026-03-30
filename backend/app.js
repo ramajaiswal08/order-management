@@ -1,73 +1,47 @@
-require('dotenv').config();
-
-// BigInt serialization fix for JSON.stringify (Prisma returns BigInt for some fields)
-BigInt.prototype.toJSON = function() { return this.toString(); };
-
 const express = require('express');
 const cors    = require('cors');
 const helmet  = require('helmet');
 const rateLimit = require('express-rate-limit');
-const logger  = require('./utils/logger');
-
-const authRoutes    = require('./routes/auth');
-const addressRoutes = require('./routes/addresses');
-const productRoutes = require('./routes/products');
-const orderRoutes   = require('./routes/orders');
-const shipperRoutes = require('./routes/shippers');
 
 const app = express();
 
-// Security Middlewares
+// Security Headers
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
-app.use(express.json());
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: { message: 'Too many requests, please try again later.' }
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
 });
 app.use('/api/', limiter);
 
-// Request Logging
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.url}`);
-  next();
-});
+app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', credentials: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.get('/', (req, res) => res.send('Order Management API v1 is LIVE'));
-app.get('/api/test', (req, res) => res.json({ success: true, message: 'API is reachable' }));
-app.use('/api/v1/auth',      authRoutes);
-app.use('/api/v1/addresses', addressRoutes);
-app.use('/api/v1/products',  productRoutes);
-app.use('/api/v1/orders',    orderRoutes);
-app.use('/api/v1/shippers',  shipperRoutes);
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/orders',    require('./routes/orders'));
+app.use('/api/products',  require('./routes/products'));
+app.use('/api/addresses', require('./routes/addresses'));
+app.use('/api/shippers',  require('./routes/shippers'));
 
-// 404 Handler
+// 404 catch-all
 app.use((req, res) => {
-  res.status(404).json({ success: false, error: 'Resource not found' });
+  res.status(404).json({ message: `Route ${req.method} ${req.path} not found` });
 });
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  
-  const statusCode = err.statusCode || 500;
-  const message    = err.message || 'Internal Server Error';
-  
-  res.status(statusCode).json({
-    success: false,
-    error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
+// Global error handler
+// asyncHandler forwards all thrown errors here via next(err).
+// Errors thrown from services carry a statusCode property.
+app.use((err, req, res, _next) => {
+  const status = err.statusCode || 500;
+  const message = status < 500
+    ? err.message                       // operational error — safe to surface
+    : 'An internal server error occurred'; // programmer error — hide details
+  if (status >= 500) console.error(err); // only log unexpected errors
+  res.status(status).json({ message });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  logger.info(`Server started on port ${PORT}`);
-});
-
-module.exports = app;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
