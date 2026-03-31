@@ -6,11 +6,11 @@ const logger = require('../utils/logger');
 const signToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-/**
- * Register a new user.
- */
+// Register a new user.
+
 exports.register = async ({ username, email, password }) => {
   if (!username || !email || !password) {
+    logger.warn(`Registration failed :Missing required fields`);
     const err = new Error('All fields are required');
     err.statusCode = 400;
     throw err;
@@ -22,6 +22,7 @@ exports.register = async ({ username, email, password }) => {
   });
 
   if (existingUser) {
+    logger.info(`Registration failed : User already exists (${email})`);
     const err = new Error('User already exists');
     err.statusCode = 400;
     throw err;
@@ -48,10 +49,14 @@ exports.register = async ({ username, email, password }) => {
   return { token, user };
 };
 
-/**
- * Authenticate a user and return a JWT.
- */
+// Authenticate a user and return a JWT.
 exports.login = async ({ email, password }) => {
+  if (!email || !password) {
+    logger.warn(`Login failed: Missing credentials`);
+    const err = new Error('Email and password are required');
+    err.statusCode = 400;
+    throw err;
+  }
   const user = await prisma.user.findUnique({
     where: { email },
     select: {
@@ -98,6 +103,7 @@ exports.getMe = async (userId) => {
   });
 
   if (!user) {
+    logger.warn(`getMe failed: User not found (ID: ${userId})`);
     const err = new Error('User not found');
     err.statusCode = 404;
     throw err;

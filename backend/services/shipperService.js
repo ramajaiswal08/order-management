@@ -1,8 +1,8 @@
 const prisma = require('../config/db');
+const logger = require('../utils/logger');
 
-/**
- * List all shippers.
- */
+// List all shippers.
+
 exports.list = async () => {
   const shippers = await prisma.shipper.findMany({
     select: {
@@ -15,6 +15,7 @@ exports.list = async () => {
       shipperId: 'asc'
     }
   });
+  logger.info(`Fetched ${shippers.length} shippers`);
 
   // Transform to match expected format
   return shippers.map(shipper => ({
@@ -25,11 +26,12 @@ exports.list = async () => {
   }));
 };
 
-/**
- * Create a new shipper (admin only — enforced at route level).
- */
+
+//Create a new shipper (admin only — enforced at route level).
+
 exports.create = async ({ SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
   if (!SHIPPER_NAME || !SHIPPER_PHONE) {
+    logger.warn('Shipper creation failed: Missing required fields');
     const err = new Error('SHIPPER_NAME and SHIPPER_PHONE are required');
     err.statusCode = 400;
     throw err;
@@ -45,13 +47,13 @@ exports.create = async ({ SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
       shipperId: true
     }
   });
+  logger.info(`Shipper created with ID: ${shipper.shipperId}`);
 
   return shipper.shipperId;
 };
 
-/**
- * Update a shipper by ID (admin only — enforced at route level).
- */
+//Update a shipper by ID (admin only — enforced at route level).
+ 
 exports.update = async (shipperId, { SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
   const existingShipper = await prisma.shipper.findUnique({
     where: { shipperId: parseInt(shipperId) }
@@ -71,17 +73,18 @@ exports.update = async (shipperId, { SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRES
       shipperAddress: SHIPPER_ADDRESS
     }
   });
+   logger.info(`Shipper updated: ${shipperId}`);
 };
 
-/**
- * Delete a shipper by ID (admin only — enforced at route level).
- */
+//Delete a shipper by ID (admin only — enforced at route level).
+ 
 exports.remove = async (shipperId) => {
   const existingShipper = await prisma.shipper.findUnique({
     where: { shipperId: parseInt(shipperId) }
   });
 
   if (!existingShipper) {
+    logger.warn(`Delete failed: Shipper ${id} not found`);
     const err = new Error('Shipper not found');
     err.statusCode = 404;
     throw err;

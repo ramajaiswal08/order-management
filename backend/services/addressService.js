@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const logger = require('../utils/logger');
 
 /**
  * List all addresses for a user, default first.
@@ -22,6 +23,7 @@ exports.list = async (userId) => {
       { addressId: 'asc' }
     ]
   });
+  logger.info(`Fetched ${addresses.length} addresses for user ${userId}`);
 
   // Transform to match expected format
   return addresses.map(addr => ({
@@ -43,6 +45,7 @@ exports.list = async (userId) => {
  */
 exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefault }) => {
   if (!line1 || !city || !pincode) {
+    logger.warn(`Address creation failed for user ${userId}: Missing required fields`);
     const err = new Error('line1, city and pincode are required');
     err.statusCode = 400;
     throw err;
@@ -50,6 +53,7 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
 
   return await prisma.$transaction(async (tx) => {
     if (isDefault) {
+      logger.info(`Resetting default addresses for user ${userId}`);
       await tx.address.updateMany({
         where: { customerId: parseInt(userId) },
         data: { isDefault: false }
@@ -72,6 +76,7 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
         addressId: true
       }
     });
+    logger.info(`Address created with ID ${address.addressId} for user ${userId}`);
 
     return address.addressId;
   });
@@ -89,6 +94,7 @@ exports.remove = async (userId, addressId) => {
   });
 
   if (!address) {
+    logger.warn(`Delete failed: Address ${id} not found for user ${userId}`);
     const err = new Error('Address not found');
     err.statusCode = 404;
     throw err;
@@ -97,4 +103,5 @@ exports.remove = async (userId, addressId) => {
   await prisma.address.delete({
     where: { addressId: parseInt(addressId) }
   });
+  logger.info(`Address deleted : ${id} for user ${userId}`);
 };

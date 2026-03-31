@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const logger = require('../utils/logger');
 
 /**
  * Get a paginated, filtered list of products.
@@ -39,6 +40,7 @@ exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
       take: Number(limit)
     })
   ]);
+  logger.info(`Products fetched : count=${products.length}`);
 
   return {
     products: products.map(p => ({
@@ -75,6 +77,7 @@ exports.getById = async (productId) => {
   });
 
   if (!product) {
+    logger.warn(`Product not found : productId=${productId}`);
     const err = new Error('Product not found');
     err.statusCode = 404;
     throw err;
@@ -89,6 +92,7 @@ exports.getById = async (productId) => {
     PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
   };
 };
+logger.info(`Product fetched : productId=${productId}`);
 
 /**
  * Get all product categories with product count.
@@ -106,7 +110,7 @@ exports.getCategories = async () => {
       productClassDesc: 'asc'
     }
   });
-
+logger.info(`Categories fetched : count=${cats.length}`);
   return cats.map(cat => ({
     PRODUCT_CLASS_CODE: cat.code,       // map "code" to PRODUCT_CLASS_CODE
     PRODUCT_CLASS_DESC: cat.productClassDesc,

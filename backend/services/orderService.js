@@ -11,7 +11,7 @@ const logger = require('../utils/logger');
   }
 }
 
-async function verifyAddress(userId, shippingAddressId) {
+exports.verifyAddress = async (userId, shippingAddressId) => {
   const address = await prisma.address.findFirst({
     where: {
       addressId: parseInt(shippingAddressId),
@@ -29,7 +29,7 @@ async function verifyAddress(userId, shippingAddressId) {
   return address;
 }
 
-function aggregateItems(items) {
+exports.aggregateItems = (items) => {
   return items.reduce((acc, it) => {
     const existing = acc.find(x => x.productId === it.productId);
     if (existing) existing.quantity += it.quantity;
@@ -38,14 +38,15 @@ function aggregateItems(items) {
   }, []);
 }
 
-async function getShipper(tx) {
+exports.getShipper = async (tx) => {
   return await tx.shipper.findFirst({
     orderBy: { shipperId: 'asc' },
     select: { shipperId: true }
   });
+  
 }
 
-async function createOrderHeader(tx, userId, shippingAddressId, paymentMode, shipper) {
+exports.createOrderHeader = async (tx, userId, shippingAddressId, paymentMode, shipper) => {
   return await tx.orderHeader.create({
     data: {
       customerId: parseInt(userId),
@@ -58,10 +59,12 @@ async function createOrderHeader(tx, userId, shippingAddressId, paymentMode, shi
       shippingAddressId: parseInt(shippingAddressId)
     },
     select: { orderId: true }
+    
   });
+  
 }
 
-async function createOrderItems(tx, orderId, items) {
+exports.createOrderItems = async (tx, orderId, items) => {
   await tx.orderItem.createMany({
     data: items.map(item => ({
       orderId,
@@ -69,9 +72,10 @@ async function createOrderItems(tx, orderId, items) {
       productQuantity: item.quantity
     }))
   });
+  logger.info(`Order items created | orderId=${orderId}`);
 }
 
-async function updateStock(tx, items) {
+exports.updateStock = async (tx, items) => {
   for (const item of items) {
     await tx.product.update({
       where: { productId: parseInt(item.productId) },
@@ -81,48 +85,11 @@ async function updateStock(tx, items) {
         }
       }
     });
+
   }
+  logger.info(`Stock updated`);
 }
-
-exports.createOrder = async ({ userId, items, shippingAddressId, paymentMode }) => {
-
-  // 1. Validate input
-  validateOrderInput(userId, items, shippingAddressId);
-
-  // 2. Verify address ownership
-  await verifyAddress(userId, shippingAddressId);
-
-  // 3. Run transaction
-  return await prisma.$transaction(async (tx) => {
-
-    // 4. Aggregate items
-    const aggregatedItems = aggregateItems(items);
-
-    // 5. Get shipper
-    const shipper = await getShipper(tx);
-
-    // 6. Create order header
-    const order = await createOrderHeader(
-      tx,
-      userId,
-      shippingAddressId,
-      paymentMode,
-      shipper
-    );
-
-    logger.info(`Order header created: ${order.orderId}`);
-
-    // 7. Create order items
-    await createOrderItems(tx, order.orderId, aggregatedItems);
-
-    // 8. Update stock
-    await updateStock(tx, aggregatedItems);
-
-    logger.info(`Order created: ${order.orderId} for user ${userId}`);
-
-    return { orderId: order.orderId };
-  });
-};    
+   
    
 /**
  * Get all orders for a given user (paginated).
@@ -154,6 +121,7 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
       take: limit
     })
   ]);
+  logger.info(`Orders fetched | userId=${userId}, count=${orders.length}`);
 
   // Transform to match expected format
   const data = orders.map(order => {
@@ -222,6 +190,7 @@ exports.getOrderDetails = async (orderId, userId) => {
   });
 
   if (!order) {
+    logger.warn(`Order not found : orderId=${orderId}`);
     const err = new Error('Order not found');
     err.statusCode = 404;
     throw err;
@@ -291,6 +260,7 @@ exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
       take: limit
     })
   ]);
+  logger.info(`Orders fetched :count=${orders.length}`);
 
   // Transform to match expected format
   const data = orders.map(order => {
@@ -329,6 +299,7 @@ const VALID_STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancel
  */
 exports.updateStatus = async (orderId, rawStatus) => {
   if (!rawStatus) {
+    logger.warn(`Update status failed : Status is required`);
     const err = new Error('Status is required');
     err.statusCode = 400;
     throw err;
@@ -337,6 +308,7 @@ exports.updateStatus = async (orderId, rawStatus) => {
   if (status === 'shipping') status = 'shipped'; // normalise alias
 
   if (!VALID_STATUSES.includes(status)) {
+    logger.warn(`Update status failed : Invalid status`);
     const err = new Error(`Invalid status. Valid values: ${VALID_STATUSES.join(', ')}`);
     err.statusCode = 400;
     throw err;
@@ -360,6 +332,7 @@ exports.assignShipper = async (orderId, shipperId) => {
   });
 
   if (!shipper) {
+    logger.warn(`Assign shipper failed : Shipper not found`);
     const err = new Error('Shipper not found');
     err.statusCode = 404;
     throw err;
