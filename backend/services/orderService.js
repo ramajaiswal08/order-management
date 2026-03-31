@@ -2,14 +2,14 @@ const prisma = require('../config/db');
 const logger = require('../utils/logger');
 
 
- function validateOrderInput(userId, items, shippingAddressId) {
+exports.validateOrderInput = (userId, items, shippingAddressId) => {
   if (!items?.length || !shippingAddressId) {
     logger.warn(`Invalid order data by user ${userId}`);
     const err = new Error('Invalid order data');
     err.statusCode = 400;
     throw err;
   }
-}
+};
 
 exports.verifyAddress = async (userId, shippingAddressId) => {
   const address = await prisma.address.findFirst({
@@ -95,7 +95,9 @@ exports.updateStock = async (tx, items) => {
  * Get all orders for a given user (paginated).
  */
 exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
-  const skip = (page - 1) * limit;
+  const p = parseInt(page) || 1;
+  const l = parseInt(limit) || 10;
+  const skip = (p - 1) * l;
 
   const [total, orders] = await Promise.all([
     prisma.orderHeader.count({ where: { customerId: parseInt(userId) } }),
@@ -118,7 +120,7 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
       },
       orderBy: { orderId: 'desc' },
       skip,
-      take: limit
+      take: l
     })
   ]);
   logger.info(`Orders fetched | userId=${userId}, count=${orders.length}`);
@@ -139,7 +141,7 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
       STATUS: order.orderStatus,
       USERNAME: order.customer?.username,
       SHIPPER_NAME: order.shipper?.shipperName,
-      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      SHIPPER_PHONE: order.shipper?.shipperPhone ? String(order.shipper.shipperPhone) : null,
       TOTAL_AMOUNT: totalAmount,
       ITEMS: items
     };
@@ -148,8 +150,8 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
   return {
     orders: data,
     total,
-    page,
-    pages: Math.ceil(total / limit)
+    page: p,
+    pages: Math.ceil(total / l)
   };
 };
 
@@ -216,7 +218,7 @@ exports.getOrderDetails = async (orderId, userId) => {
       ORDER_SHIPMENT_DATE: order.orderShipmentDate,
       SHIPPER_ID: order.shipper?.shipperId,
       SHIPPER_NAME: order.shipper?.shipperName,
-      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      SHIPPER_PHONE: order.shipper?.shipperPhone ? String(order.shipper.shipperPhone) : null,
       SHIPPING_ADDRESS_ID: order.shippingAddressId,
       ADDRESS_LINE1: order.shippingAddress?.addressLine1,
       ADDRESS_LINE2: order.shippingAddress?.addressLine2,
@@ -235,7 +237,9 @@ exports.getOrderDetails = async (orderId, userId) => {
  * Get all orders (admin only - paginated).
  */
 exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
-  const skip = (page - 1) * limit;
+  const p = parseInt(page) || 1;
+  const l = parseInt(limit) || 10;
+  const skip = (p - 1) * l;
 
   const [total, orders] = await Promise.all([
     prisma.orderHeader.count(),
@@ -257,7 +261,7 @@ exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
       },
       orderBy: { orderId: 'desc' },
       skip,
-      take: limit
+      take: l
     })
   ]);
   logger.info(`Orders fetched :count=${orders.length}`);
@@ -278,7 +282,7 @@ exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
       STATUS: order.orderStatus,
       USERNAME: order.customer?.username,
       SHIPPER_NAME: order.shipper?.shipperName,
-      SHIPPER_PHONE: order.shipper?.shipperPhone,
+      SHIPPER_PHONE: order.shipper?.shipperPhone ? String(order.shipper.shipperPhone) : null,
       TOTAL_AMOUNT: totalAmount,
       ITEMS: items
     };
@@ -287,8 +291,8 @@ exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
   return {
     orders: data,
     total,
-    page,
-    pages: Math.ceil(total / limit)
+    page: p,
+    pages: Math.ceil(total / l)
   };
 };
 

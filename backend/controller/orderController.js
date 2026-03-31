@@ -63,7 +63,7 @@ exports.getAllOrders = async (req, res, next) => {
 exports.updateStatus = async (req, res, next) => {
   try {
     const result = await orderManager.updateStatus(
-      req.params.orderId,
+      req.params.id,
       req.body.status
     );
 
@@ -78,7 +78,7 @@ exports.updateStatus = async (req, res, next) => {
 exports.assignShipper = async (req, res, next) => {
   try {
     await orderManager.assignShipper(
-      req.params.orderId,
+      req.params.id,
       req.body.shipperId
     );
 

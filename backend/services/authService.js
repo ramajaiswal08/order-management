@@ -92,7 +92,7 @@ exports.login = async ({ email, password }) => {
  * Fetch the current user from the DB and issue a fresh token (handles role changes).
  */
 exports.getMe = async (userId) => {
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: { userId: parseInt(userId) },
     select: {
       userId: true,

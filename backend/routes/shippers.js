@@ -3,7 +3,6 @@ const router = express.Router();
 const shipperController = require('../controller/shipperController');
 const authMiddleware    = require('../middleware/auth');
 const adminOnly         = require('../middleware/adminOnly');
-
 const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 

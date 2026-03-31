@@ -20,11 +20,11 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', crede
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth',      require('./routes/auth'));
-app.use('/api/orders',    require('./routes/orders'));
-app.use('/api/products',  require('./routes/products'));
-app.use('/api/addresses', require('./routes/addresses'));
-app.use('/api/shippers',  require('./routes/shippers'));
+app.use('/api/v1/auth',      require('./routes/auth'));
+app.use('/api/v1/orders',    require('./routes/orders'));
+app.use('/api/v1/products',  require('./routes/products'));
+app.use('/api/v1/addresses', require('./routes/addresses'));
+app.use('/api/v1/shippers',  require('./routes/shippers'));
 
 // 404 catch-all
 app.use((req, res) => {
@@ -44,4 +44,8 @@ app.use((err, req, res, _next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;

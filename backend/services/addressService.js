@@ -94,14 +94,15 @@ exports.remove = async (userId, addressId) => {
   });
 
   if (!address) {
-    logger.warn(`Delete failed: Address ${id} not found for user ${userId}`);
+    logger.warn(`Delete failed: Address ${addressId} not found for user ${userId}`);
     const err = new Error('Address not found');
     err.statusCode = 404;
     throw err;
   }
 
-  await prisma.address.delete({
-    where: { addressId: parseInt(addressId) }
+  await prisma.address.update({
+    where: { addressId: parseInt(addressId) },
+    data: { isDeleted: true }
   });
-  logger.info(`Address deleted : ${id} for user ${userId}`);
+  logger.info(`Address deleted : ${addressId} for user ${userId}`);
 };

@@ -20,7 +20,7 @@ describe('Order Service - Get User Orders', () => {
         customer: { username: 'Rama' },
         shipper: {
           shipperName: 'Delhivery',
-          shipperPhone: '9999999999'
+          shipperPhone: BigInt(9999999999)
         },
         orderItems: [
           {

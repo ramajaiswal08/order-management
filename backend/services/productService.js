@@ -92,7 +92,7 @@ exports.getById = async (productId) => {
     PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
   };
 };
-logger.info(`Product fetched : productId=${productId}`);
+logger.info(`Product fetched `);
 
 /**
  * Get all product categories with product count.

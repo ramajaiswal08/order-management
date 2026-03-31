@@ -7,13 +7,24 @@ const validate = require('../middleware/validate');
 
 router.post('/register', 
     [
-        body('name').isLength({min : 3}),
-        body('email').isEmail(),
-        body('password').isLength({min : 6}),
+        body('username').isLength({min : 3}).withMessage('Name must be at least 3 characters long'),
+        body('email').isEmail().withMessage('Invalid email address'),
+        body('password').isLength({min : 6}).withMessage('Password must be at least 6 characters long'),
     ],
     validate,
     authController.register);
-router.post('/login', authController.login);
+router.post('/login',
+    [
+     body('email')
+      .isEmail()
+      .withMessage('Invalid email'),
+
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+    ],
+    validate,
+     authController.login);
 router.get('/me', authMiddleware, authController.getMe);
 
 module.exports = router;
