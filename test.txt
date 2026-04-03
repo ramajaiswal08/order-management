@@ -1,0 +1,19 @@
+function calculateDiscount(price, pct) {
+  if (pct < 0 || pct > 100) throw Error();
+  return price - (price * pct / 100);
+}
+
+test('applies 20% discount', () => {
+  expect(calculateDiscount(100, 20))
+    .toBe(80);
+});
+
+test('handles 0% discount', () => {
+  expect(calculateDiscount(100, 0))
+    .toBe(100);
+});
+
+test('handles full discount', () => {
+  expect(calculateDiscount(100, 100))
+    .toBe(0);
+});

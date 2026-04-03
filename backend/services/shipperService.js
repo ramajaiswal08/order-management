@@ -1,7 +1,12 @@
 const prisma = require('../config/db');
 const logger = require('../utils/logger');
+const HttpStatus = require('../constants/httpStatus');
+const AppError = require('../utils/AppError');
+const ERRORS = require('../constants/errors');
 
-// List all shippers.
+const toInt = (val) => Number(val);
+
+// LIST
 
 exports.list = async () => {
   const shippers = await prisma.shipper.findMany({
@@ -11,86 +16,86 @@ exports.list = async () => {
       shipperPhone: true,
       shipperAddress: true
     },
-    orderBy: {
-      shipperId: 'asc'
-    }
+    orderBy: { shipperId: 'asc' }
   });
+
   logger.info(`Fetched ${shippers.length} shippers`);
 
-  // Transform to match expected format
-  return shippers.map(shipper => ({
-    SHIPPER_ID: shipper.shipperId,
-    SHIPPER_NAME: shipper.shipperName,
-    SHIPPER_PHONE: shipper.shipperPhone,
-    SHIPPER_ADDRESS: shipper.shipperAddress
+  return shippers.map(s => ({
+    SHIPPER_ID: s.shipperId,
+    SHIPPER_NAME: s.shipperName,
+    SHIPPER_PHONE: s.shipperPhone ? String(s.shipperPhone) : null,
+    SHIPPER_ADDRESS: s.shipperAddress
   }));
 };
 
-
-//Create a new shipper (admin only — enforced at route level).
+// CREATE
 
 exports.create = async ({ SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
   if (!SHIPPER_NAME || !SHIPPER_PHONE) {
-    logger.warn('Shipper creation failed: Missing required fields');
-    const err = new Error('SHIPPER_NAME and SHIPPER_PHONE are required');
-    err.statusCode = 400;
-    throw err;
+    logger.warn(`Shipper creation failed: Missing fields`);
+    throw new AppError(ERRORS.REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
   }
 
   const shipper = await prisma.shipper.create({
     data: {
       shipperName: SHIPPER_NAME,
-      shipperPhone: SHIPPER_PHONE,
+      shipperPhone: String(SHIPPER_PHONE), // ✅ force string
       shipperAddress: SHIPPER_ADDRESS || null
     },
-    select: {
-      shipperId: true
-    }
+    select: { shipperId: true }
   });
-  logger.info(`Shipper created with ID: ${shipper.shipperId}`);
+
+  logger.info(`Shipper created: ${shipper.shipperId}`);
 
   return shipper.shipperId;
 };
 
-//Update a shipper by ID (admin only — enforced at route level).
- 
+// UPDATE
+
 exports.update = async (shipperId, { SHIPPER_NAME, SHIPPER_PHONE, SHIPPER_ADDRESS }) => {
-  const existingShipper = await prisma.shipper.findUnique({
-    where: { shipperId: parseInt(shipperId) }
+  const id = toInt(shipperId);
+
+  const existing = await prisma.shipper.findUnique({
+    where: { shipperId: id }
   });
 
-  if (!existingShipper) {
-    const err = new Error('Shipper not found');
-    err.statusCode = 404;
-    throw err;
+  if (!existing) {
+    logger.warn(`Update failed: Shipper not found (${id})`);
+    throw new AppError(ERRORS.SHIPPER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
+  const updateData = {};
+
+  if (SHIPPER_NAME !== undefined) updateData.shipperName = SHIPPER_NAME;
+  if (SHIPPER_PHONE !== undefined) updateData.shipperPhone = String(SHIPPER_PHONE);
+  if (SHIPPER_ADDRESS !== undefined) updateData.shipperAddress = SHIPPER_ADDRESS;
+
   await prisma.shipper.update({
-    where: { shipperId: parseInt(shipperId) },
-    data: {
-      shipperName: SHIPPER_NAME,
-      shipperPhone: SHIPPER_PHONE,
-      shipperAddress: SHIPPER_ADDRESS
-    }
+    where: { shipperId: id },
+    data: updateData
   });
-   logger.info(`Shipper updated: ${shipperId}`);
+
+  logger.info(`Shipper updated: ${id}`);
 };
 
-//Delete a shipper by ID (admin only — enforced at route level).
- 
+//  DELETE
+
 exports.remove = async (shipperId) => {
-  const existingShipper = await prisma.shipper.findUnique({
-    where: { shipperId: parseInt(shipperId) }
+  const id = toInt(shipperId);
+
+  const existing = await prisma.shipper.findUnique({
+    where: { shipperId: id }
   });
 
-  if (!existingShipper) {
-    logger.warn(`Delete failed: Shipper ${id} not found`);
-    const err = new Error('Shipper not found');
-    err.statusCode = 404;
-    throw err;
+  if (!existing) {
+    logger.warn(`Delete failed: Shipper not found (${id})`);
+    throw new AppError(ERRORS.SHIPPER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   await prisma.shipper.delete({
-    where: { shipperId: parseInt(shipperId) }
+    where: { shipperId: id }
   });
+
+  logger.info(`Shipper deleted: ${id}`); // ✅ added
 };

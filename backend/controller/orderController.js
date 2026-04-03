@@ -1,89 +1,98 @@
 const orderManager = require('../manager/orderManager');
+const HttpStatus = require('../constants/httpStatus');
+const asyncHandler = require('../utils/asyncHandler');
+const logger = require('../utils/logger');
+const MESSAGES = require('../constants/messages');
+
+// CREATE ORDER
+exports.createOrder = asyncHandler(async (req, res) => {
+  logger.info(`Creating order for user ${req.user.id}`);
+
+  const data = await orderManager.createOrder({
+    userId: req.user.id,
+    items: req.body.items,
+    shippingAddressId: req.body.shippingAddressId,
+    paymentMode: req.body.paymentMode
+  });
+
+  res.status(HttpStatus.CREATED).json({
+    success: true,
+    data,
+    message: MESSAGES.ORDER_CREATED
+  });
+});
 
 
-//CREATE ORDER
-exports.createOrder = async (req, res, next) => {
-  try {
-    const result = await orderManager.createOrder({
-      userId: req.user.id,   // from auth middleware
-      items: req.body.items,
-      shippingAddressId: req.body.shippingAddressId,
-      paymentMode: req.body.paymentMode
-    });
+// GET USER ORDERS
+exports.getUserOrders = asyncHandler(async (req, res) => {
+  logger.info(`Fetching orders for user ${req.user.id}`);
 
-    res.status(201).json(result);
-  } catch (err) {
-    next(err);
-  }
-};
+  const data = await orderManager.getUserOrders(req.user.id, req.query);
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    data
+  });
+});
 
 
-//  GET USER ORDERS
-exports.getUserOrders = async (req, res, next) => {
-  try {
-    const result = await orderManager.getUserOrders(
-      req.user.id,
-      req.query
-    );
+// GET ORDER DETAILS
+exports.getOrderDetails = asyncHandler(async (req, res) => {
+  logger.info(`Fetching order ${req.params.id} for user ${req.user.id}`);
 
-    res.json(result);
-  } catch (err) {
-    next(err);
-  }
-};
+  const data = await orderManager.getOrderDetails(
+    req.params.id,
+    req.user.id
+  );
 
-
-//GET ORDER DETAILS
-exports.getOrderDetails = async (req, res, next) => {
-  try {
-    const result = await orderManager.getOrderDetails(
-      req.params.orderId,
-      req.user.id
-    );
-
-    res.json(result);
-  } catch (err) {
-    next(err);
-  }
-};
+  res.status(HttpStatus.OK).json({
+    success: true,
+    data
+  });
+});
 
 
-//ADMIN: GET ALL ORDERS
-exports.getAllOrders = async (req, res, next) => {
-  try {
-    const result = await orderManager.getAllOrders(req.query);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  }
-};
+// ADMIN: GET ALL ORDERS
+exports.getAllOrders = asyncHandler(async (req, res) => {
+  logger.info(`Admin fetching all orders`);
+
+  const data = await orderManager.getAllOrders(req.query);
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    data
+  });
+});
 
 
-//UPDATE STATUS
-exports.updateStatus = async (req, res, next) => {
-  try {
-    const result = await orderManager.updateStatus(
-      req.params.id,
-      req.body.status
-    );
+// UPDATE STATUS
+exports.updateStatus = asyncHandler(async (req, res) => {
+  logger.warn(`Updating order ${req.params.id} status`);
 
-    res.json({ status: result });
-  } catch (err) {
-    next(err);
-  }
-};
+  const status = await orderManager.updateStatus(
+    req.params.id,
+    req.body.status
+  );
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    data: { status },
+    message: MESSAGES.ORDER_STATUS_UPDATED
+  });
+});
 
 
 // ASSIGN SHIPPER
-exports.assignShipper = async (req, res, next) => {
-  try {
-    await orderManager.assignShipper(
-      req.params.id,
-      req.body.shipperId
-    );
+exports.assignShipper = asyncHandler(async (req, res) => {
+  logger.info(`Assigning shipper to order ${req.params.id}`);
 
-    res.json({ message: 'Shipper assigned successfully' });
-  } catch (err) {
-    next(err);
-  }
-};
+  await orderManager.assignShipper(
+    req.params.id,
+    req.body.shipperId
+  );
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    message: MESSAGES.SHIPPER_ASSIGNED
+  });
+});

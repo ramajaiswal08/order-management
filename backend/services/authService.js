@@ -2,30 +2,37 @@ const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
+const HttpStatus = require('../constants/httpStatus');
+const AppError = require('../utils/AppError');
+const ERRORS = require('../constants/errors');
+
+const toInt = (val) => Number(val);
+
+if (!process.env.JWT_EXPIRES) {
+  throw new Error('JWT_EXPIRES is not defined in environment variables');
+}
 
 const signToken = (payload) =>
-  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+  jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES
+  });
 
-// Register a new user.
-
+// REGISTER
 exports.register = async ({ username, email, password }) => {
   if (!username || !email || !password) {
-    logger.warn(`Registration failed :Missing required fields`);
-    const err = new Error('All fields are required');
-    err.statusCode = 400;
-    throw err;
+    logger.warn(`Registration failed: Missing fields`);
+    throw new AppError(ERRORS.REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
   }
 
-  // Check if user already exists
+  const normalizedEmail = email.toLowerCase();
+
   const existingUser = await prisma.user.findUnique({
-    where: { email }
+    where: { email: normalizedEmail }
   });
 
   if (existingUser) {
-    logger.info(`Registration failed : User already exists (${email})`);
-    const err = new Error('User already exists');
-    err.statusCode = 400;
-    throw err;
+    logger.info(`User already exists: ${normalizedEmail}`);
+    throw new AppError(ERRORS.USER_EXISTS, HttpStatus.BAD_REQUEST);
   }
 
   const hashed = await bcrypt.hash(password, 10);
@@ -33,7 +40,7 @@ exports.register = async ({ username, email, password }) => {
   const user = await prisma.user.create({
     data: {
       username,
-      email,
+      email: normalizedEmail,
       password: hashed
     },
     select: {
@@ -44,21 +51,24 @@ exports.register = async ({ username, email, password }) => {
     }
   });
 
-  logger.info(`Registered new user: ${email}`);
+  logger.info(`User registered: ${normalizedEmail}`);
+
   const token = signToken({ id: user.userId, role: user.role });
+
   return { token, user };
 };
 
-// Authenticate a user and return a JWT.
+// LOGIN
 exports.login = async ({ email, password }) => {
   if (!email || !password) {
     logger.warn(`Login failed: Missing credentials`);
-    const err = new Error('Email and password are required');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError(ERRORS.REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
   }
+
+  const normalizedEmail = email.toLowerCase();
+
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email: normalizedEmail },
     select: {
       userId: true,
       username: true,
@@ -69,14 +79,14 @@ exports.login = async ({ email, password }) => {
   });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    logger.warn(`Failed login attempt for: ${email}`);
-    const err = new Error('Invalid credentials');
-    err.statusCode = 401;
-    throw err;
+    logger.warn(`Invalid login attempt: ${normalizedEmail}`);
+    throw new AppError(ERRORS.INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED);
   }
 
-  logger.info(`Login success: ${email} (Role: ${user.role})`);
+  logger.info(`Login success: ${normalizedEmail}`);
+
   const token = signToken({ id: user.userId, role: user.role });
+
   return {
     token,
     user: {
@@ -88,12 +98,10 @@ exports.login = async ({ email, password }) => {
   };
 };
 
-/**
- * Fetch the current user from the DB and issue a fresh token (handles role changes).
- */
+// GET ME
 exports.getMe = async (userId) => {
   const user = await prisma.user.findUnique({
-    where: { userId: parseInt(userId) },
+    where: { userId: toInt(userId) },
     select: {
       userId: true,
       username: true,
@@ -103,14 +111,14 @@ exports.getMe = async (userId) => {
   });
 
   if (!user) {
-    logger.warn(`getMe failed: User not found (ID: ${userId})`);
-    const err = new Error('User not found');
-    err.statusCode = 404;
-    throw err;
+    logger.warn(`User not found: ${userId}`);
+    throw new AppError(ERRORS.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
-  logger.info(`getMe: ${user.email} (Role: ${user.role})`);
+  logger.info(`Fetched user: ${user.email}`);
+
   const token = signToken({ id: user.userId, role: user.role });
+
   return {
     token,
     user: {

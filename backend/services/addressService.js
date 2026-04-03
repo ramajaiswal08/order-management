@@ -1,68 +1,45 @@
 const prisma = require('../config/db');
 const logger = require('../utils/logger');
+const HttpStatus = require('../constants/httpStatus');
+const AppError = require('../utils/AppError');
+const ERRORS = require('../constants/errors');
 
-/**
- * List all addresses for a user, default first.
- */
+const toInt = (val) => Number(val);
+
+// LIST
 exports.list = async (userId) => {
+  const user = toInt(userId);
+
   const addresses = await prisma.address.findMany({
-    where: { customerId: parseInt(userId) },
-    select: {
-      addressId: true,
-      label: true,
-      addressLine1: true,
-      addressLine2: true,
-      city: true,
-      state: true,
-      pincode: true,
-      country: true,
-      isDefault: true
-    },
-    orderBy: [
-      { isDefault: 'desc' },
-      { addressId: 'asc' }
-    ]
+    where: { customerId: user },
+    orderBy: [{ isDefault: 'desc' }, { addressId: 'asc' }]
   });
+
   logger.info(`Fetched ${addresses.length} addresses for user ${userId}`);
 
-  // Transform to match expected format
-  return addresses.map(addr => ({
-    ADDRESS_ID: addr.addressId,
-    LABEL: addr.label,
-    ADDRESS_LINE1: addr.addressLine1,
-    ADDRESS_LINE2: addr.addressLine2,
-    CITY: addr.city,
-    STATE: addr.state,
-    PINCODE: addr.pincode,
-    COUNTRY: addr.country,
-    IS_DEFAULT: addr.isDefault
-  }));
+  return addresses;
 };
 
-/**
- * Add a new address for a user.
- * Wraps default-flag update + insert in a transaction to avoid a race condition.
- */
+// ADD
 exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefault }) => {
   if (!line1 || !city || !pincode) {
-    logger.warn(`Address creation failed for user ${userId}: Missing required fields`);
-    const err = new Error('line1, city and pincode are required');
-    err.statusCode = 400;
-    throw err;
+    logger.warn(`Address creation failed for user ${userId}`);
+    throw new AppError(ERRORS.ADDRESS_REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
   }
 
-  return await prisma.$transaction(async (tx) => {
+  const user = toInt(userId);
+
+  return prisma.$transaction(async (tx) => {
     if (isDefault) {
-      logger.info(`Resetting default addresses for user ${userId}`);
       await tx.address.updateMany({
-        where: { customerId: parseInt(userId) },
+        where: { customerId: user },
         data: { isDefault: false }
       });
     }
 
     const address = await tx.address.create({
       data: {
-        customerId: parseInt(userId),
+        customerId: user,
         label: label || 'Home',
         addressLine1: line1,
         addressLine2: line2 || null,
@@ -71,38 +48,36 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
         pincode,
         country: 'India',
         isDefault: Boolean(isDefault)
-      },
-      select: {
-        addressId: true
       }
     });
-    logger.info(`Address created with ID ${address.addressId} for user ${userId}`);
+
+    logger.info(`Address created: ${address.addressId} for user ${userId}`);
 
     return address.addressId;
   });
 };
 
-/**
- * Delete an address, verifying ownership first.
- */
+// REMOVE
 exports.remove = async (userId, addressId) => {
+  const user = toInt(userId);
+  const addrId = toInt(addressId);
+
   const address = await prisma.address.findFirst({
     where: {
-      addressId: parseInt(addressId),
-      customerId: parseInt(userId)
+      addressId: addrId,
+      customerId: user
     }
   });
 
   if (!address) {
-    logger.warn(`Delete failed: Address ${addressId} not found for user ${userId}`);
-    const err = new Error('Address not found');
-    err.statusCode = 404;
-    throw err;
+    logger.warn(`Address ${addressId} not found for user ${userId}`);
+    throw new AppError(ERRORS.ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   await prisma.address.update({
-    where: { addressId: parseInt(addressId) },
+    where: { addressId: addrId },
     data: { isDeleted: true }
   });
-  logger.info(`Address deleted : ${addressId} for user ${userId}`);
+
+  logger.info(`Address deleted: ${addressId} for user ${userId}`);
 };

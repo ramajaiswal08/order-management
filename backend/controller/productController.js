@@ -1,22 +1,121 @@
-const asyncHandler    = require('../utils/asyncHandler');
-const productService  = require('../services/productService');
+const prisma = require('../config/db');
+const logger = require('../utils/logger');
+const HttpStatus = require('../constants/httpStatus');
+const AppError = require('../utils/AppError');
+const ERRORS = require('../constants/errors');
 
-exports.getAll = asyncHandler(async (req, res) => {
-  const { page, limit, ...filters } = req.query;
-  const data = await productService.getAll({ 
-    ...filters, 
-    page: parseInt(page) || 1, 
-    limit: parseInt(limit) || 12 
+const toInt = (val, def = 0) => Number(val) || def;
+
+// GET ALL
+
+exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
+  const p = Math.max(toInt(page, 1), 1);
+  const l = Math.max(toInt(limit, 12), 1);
+  const offset = (p - 1) * l;
+
+  const where = {};
+
+  if (search) {
+    where.productDesc = {
+      contains: search,
+      mode: 'insensitive'  
+    };
+  }
+
+  if (category) {
+    where.productClassCode = toInt(category);
+  }
+
+  const [total, products] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      select: {
+        productId: true,
+        productDesc: true,
+        productClassCode: true,
+        productPrice: true,
+        productQuantityAvail: true,
+        productClass: {
+          select: { productClassDesc: true }
+        }
+      },
+      orderBy: { productId: 'desc' },
+      skip: offset,
+      take: l
+    })
+  ]);
+
+  logger.info(
+    `Products fetched | page=${p}, limit=${l}, count=${products.length}`
+  );
+
+  return {
+    products: products.map(p => ({
+      PRODUCT_ID: p.productId,
+      PRODUCT_DESC: p.productDesc,
+      PRODUCT_CLASS_CODE: p.productClassCode,
+      PRICE: p.productPrice,
+      STOCK: p.productQuantityAvail,
+      PRODUCT_CLASS_DESC: p.productClass?.productClassDesc
+    })),
+    total,
+    page: p,
+    pages: Math.ceil(total / l)
+  };
+};
+
+//GET BY ID
+
+exports.getById = async (productId) => {
+  const id = toInt(productId);
+
+  const product = await prisma.product.findUnique({
+    where: { productId: id },
+    select: {
+      productId: true,
+      productDesc: true,
+      productClassCode: true,
+      productPrice: true,
+      productQuantityAvail: true,
+      productClass: {
+        select: { productClassDesc: true }
+      }
+    }
   });
-  res.json({ success: true, data });
-});
 
-exports.getById = asyncHandler(async (req, res) => {
-  const product = await productService.getById(req.params.id);
-  res.json({ success: true, data: { product } });
-});
+  if (!product) {
+    logger.warn(`Product not found: ${productId}`);
+    throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+  }
 
-exports.getCategories = asyncHandler(async (req, res) => {
-  const categories = await productService.getCategories();
-  res.json({ success: true, data: { categories } });
-});
+  return {
+    PRODUCT_ID: product.productId,
+    PRODUCT_DESC: product.productDesc,
+    PRODUCT_CLASS_CODE: product.productClassCode,
+    PRICE: product.productPrice,
+    STOCK: product.productQuantityAvail,
+    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
+  };
+};
+
+//GET CATEGORIES
+
+exports.getCategories = async () => {
+  const cats = await prisma.productClass.findMany({
+    select: {
+      code: true,
+      productClassDesc: true,
+      _count: { select: { products: true } }
+    },
+    orderBy: { productClassDesc: 'asc' }
+  });
+
+  logger.info(`Categories fetched | count=${cats.length}`);
+
+  return cats.map(cat => ({
+    PRODUCT_CLASS_CODE: cat.code,
+    PRODUCT_CLASS_DESC: cat.productClassDesc,
+    COUNT: cat._count.products
+  }));
+};

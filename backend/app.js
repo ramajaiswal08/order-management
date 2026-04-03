@@ -1,7 +1,10 @@
 const express = require('express');
-const cors    = require('cors');
-const helmet  = require('helmet');
+const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const HttpStatus = require('./constants/httpStatus');
+const AppError = require('./utils/AppError');
+const logger = require('./utils/logger');
 
 const app = express();
 
@@ -20,27 +23,38 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', crede
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/v1/auth',      require('./routes/auth'));
-app.use('/api/v1/orders',    require('./routes/orders'));
-app.use('/api/v1/products',  require('./routes/products'));
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/orders', require('./routes/orders'));
+app.use('/api/v1/products', require('./routes/products'));
 app.use('/api/v1/addresses', require('./routes/addresses'));
-app.use('/api/v1/shippers',  require('./routes/shippers'));
+app.use('/api/v1/shippers', require('./routes/shippers'));
 
 // 404 catch-all
 app.use((req, res) => {
-  res.status(404).json({ message: `Route ${req.method} ${req.path} not found` });
+  res.status(HttpStatus.NOT_FOUND).json({ message: `Route ${req.method} ${req.path} not found` });
 });
 
 // Global error handler
-// asyncHandler forwards all thrown errors here via next(err).
-// Errors thrown from services carry a statusCode property.
 app.use((err, req, res, _next) => {
-  const status = err.statusCode || 500;
-  const message = status < 500
-    ? err.message                       // operational error — safe to surface
-    : 'An internal server error occurred'; // programmer error — hide details
-  if (status >= 500) console.error(err); // only log unexpected errors
-  res.status(status).json({ message });
+  const status = err.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+  const isOperational = err.isOperational || false;
+
+  // Log all 5xx or non-operational errors as errors, others as warnings/info
+  if (status >= 500 || !isOperational) {
+    logger.error('Unhandled/Server Error: ', err);
+  } else {
+    logger.warn(`Operational Error [${status}]: ${err.message}`);
+  }
+
+  const message = (isOperational || status < 500)
+    ? err.message
+    : 'An internal server error occurred';
+
+  res.status(status).json({
+    success: false,
+    message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 const PORT = process.env.PORT || 5000;

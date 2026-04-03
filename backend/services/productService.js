@@ -1,20 +1,28 @@
 const prisma = require('../config/db');
 const logger = require('../utils/logger');
+const HttpStatus = require('../constants/httpStatus');
+const AppError = require('../utils/AppError');
+const ERRORS = require('../constants/errors');
 
-/**
- * Get a paginated, filtered list of products.
- */
+const toInt = (val, def) => Number(val) || def;
+
+// GET ALL
 exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
-  const offset = (Number(page) - 1) * Number(limit);
+  const p = Math.max(toInt(page, 1), 1);
+  const l = Math.max(toInt(limit, 12), 1);
+  const offset = (p - 1) * l;
 
   const where = {};
+
   if (search) {
     where.productDesc = {
-      contains: search
+      contains: search,
+      mode: 'insensitive'   
     };
   }
+
   if (category) {
-    where.productClassCode = Number(category);
+    where.productClassCode = toInt(category);
   }
 
   const [total, products] = await Promise.all([
@@ -28,19 +36,16 @@ exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
         productPrice: true,
         productQuantityAvail: true,
         productClass: {
-          select: {
-            productClassDesc: true
-          }
+          select: { productClassDesc: true }
         }
       },
-      orderBy: {
-        productId: 'desc'
-      },
+      orderBy: { productId: 'desc' },
       skip: offset,
-      take: Number(limit)
+      take: l
     })
   ]);
-  logger.info(`Products fetched : count=${products.length}`);
+
+  logger.info(`Products fetched | page=${p}, limit=${l}, count=${products.length}`);
 
   return {
     products: products.map(p => ({
@@ -52,13 +57,12 @@ exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
       PRODUCT_CLASS_DESC: p.productClass?.productClassDesc
     })),
     total,
-    page: Number(page),
-    pages: Math.ceil(total / Number(limit))
+    page: p,
+    pages: Math.ceil(total / l)
   };
 };
-/**
- * Get a single product by ID.
- */
+
+// GET BY ID
 exports.getById = async (productId) => {
   const product = await prisma.product.findUnique({
     where: { productId: Number(productId) },
@@ -69,18 +73,14 @@ exports.getById = async (productId) => {
       productPrice: true,
       productQuantityAvail: true,
       productClass: {
-        select: {
-          productClassDesc: true
-        }
+        select: { productClassDesc: true }
       }
     }
   });
 
   if (!product) {
-    logger.warn(`Product not found : productId=${productId}`);
-    const err = new Error('Product not found');
-    err.statusCode = 404;
-    throw err;
+    logger.warn(`Product not found: ${productId}`);
+    throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   return {
@@ -92,15 +92,12 @@ exports.getById = async (productId) => {
     PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
   };
 };
-logger.info(`Product fetched `);
 
-/**
- * Get all product categories with product count.
- */
+// GET CATEGORIES
 exports.getCategories = async () => {
   const cats = await prisma.productClass.findMany({
     select: {
-      code: true,                 // use "code" instead of "productClassCode"
+      code: true,
       productClassDesc: true,
       _count: {
         select: { products: true }
@@ -110,10 +107,12 @@ exports.getCategories = async () => {
       productClassDesc: 'asc'
     }
   });
-logger.info(`Categories fetched : count=${cats.length}`);
+
+  logger.info(`Categories fetched | count=${cats.length}`);
+
   return cats.map(cat => ({
-    PRODUCT_CLASS_CODE: cat.code,       // map "code" to PRODUCT_CLASS_CODE
+    PRODUCT_CLASS_CODE: cat.code,
     PRODUCT_CLASS_DESC: cat.productClassDesc,
-    count: cat._count.products
+    COUNT: cat._count.products   // 🔥 FIX
   }));
 };
