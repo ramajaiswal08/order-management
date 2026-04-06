@@ -1,0 +1,804 @@
+﻿diff --git a/backend/constants/messages.js b/backend/constants/messages.js
+index e5f7fe0..65421e6 100644
+--- a/backend/constants/messages.js
++++ b/backend/constants/messages.js
+@@ -16,6 +16,11 @@ const MESSAGES = {
+     SHIPPER_CREATED: "Shipper added successfully",
+   SHIPPER_UPDATED: "Shipper updated successfully",
+   SHIPPER_DELETED: "Shipper removed successfully"
++  },
++  PRODUCT :{
++    PRODUCTS_FETCHED: "Products fetched successfully",
++    PRODUCT_FETCHED: "Product fetched successfully",
++    CATEGORIES_FETCHED: "Categories fetched successfully"
+   }
+ };
+ 
+diff --git a/backend/controller/addressController.js b/backend/controller/addressController.js
+index 2bfc5d1..7a22991 100644
+--- a/backend/controller/addressController.js
++++ b/backend/controller/addressController.js
+@@ -5,9 +5,11 @@ const logger = require('../utils/logger');
+ const MESSAGES = require('../constants/messages');
+ 
+ exports.list = asyncHandler(async (req, res) => {
+-  logger.info(`Fetching addresses for user ${req.user.id}`);
++  const userId = req.user?.id;
+ 
+-  const addresses = await addressService.list(req.user.id);
++  logger.info(`Fetching addresses | userId=${userId}`);
++
++  const addresses = await addressService.list(userId);
+ 
+   res.status(HttpStatus.OK).json({
+     success: true,
+@@ -16,9 +18,11 @@ exports.list = asyncHandler(async (req, res) => {
+ });
+ 
+ exports.add = asyncHandler(async (req, res) => {
+-  logger.info(`Adding address for user ${req.user.id}`);
++  const userId = req.user?.id;
++
++  logger.info(`Adding address | userId=${userId}`);
+ 
+-  const addressId = await addressService.add(req.user.id, req.body);
++  const addressId = await addressService.add(userId, req.body);
+ 
+   res.status(HttpStatus.CREATED).json({
+     success: true,
+@@ -28,9 +32,12 @@ exports.add = asyncHandler(async (req, res) => {
+ });
+ 
+ exports.remove = asyncHandler(async (req, res) => {
+-  logger.warn(`Deleting address ${req.params.id} by user ${req.user.id}`);
++  const userId = req.user?.id;
++  const addressId = req.params.id;
++
++  logger.info(`Deleting address | addressId=${addressId}, userId=${userId}`);
+ 
+-  await addressService.remove(req.user.id, req.params.id);
++  await addressService.remove(userId, addressId);
+ 
+   res.status(HttpStatus.OK).json({
+     success: true,
+diff --git a/backend/controller/productController.js b/backend/controller/productController.js
+index 7859fc2..1e8db9b 100644
+--- a/backend/controller/productController.js
++++ b/backend/controller/productController.js
+@@ -1,121 +1,50 @@
+-const prisma = require('../config/db');
+-const logger = require('../utils/logger');
++const asyncHandler = require('../utils/asyncHandler');
++const productService = require('../services/productService');
+ const HttpStatus = require('../constants/httpStatus');
+-const AppError = require('../utils/AppError');
+-const ERRORS = require('../constants/errors');
+-
+-const toInt = (val, def = 0) => Number(val) || def;
+-
+-// GET ALL
+-
+-exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
+-  const p = Math.max(toInt(page, 1), 1);
+-  const l = Math.max(toInt(limit, 12), 1);
+-  const offset = (p - 1) * l;
+-
+-  const where = {};
++const logger = require('../utils/logger');
++const MESSAGES = require('../constants/messages');
+ 
+-  if (search) {
+-    where.productDesc = {
+-      contains: search,
+-      mode: 'insensitive'  
+-    };
+-  }
++exports.getAll = asyncHandler(async (req, res) => {
++  const { page, limit, search, category } = req.query;
+ 
+-  if (category) {
+-    where.productClassCode = toInt(category);
+-  }
++  logger.info(`Fetching products | page=${page}, limit=${limit}`);
+ 
+-  const [total, products] = await Promise.all([
+-    prisma.product.count({ where }),
+-    prisma.product.findMany({
+-      where,
+-      select: {
+-        productId: true,
+-        productDesc: true,
+-        productClassCode: true,
+-        productPrice: true,
+-        productQuantityAvail: true,
+-        productClass: {
+-          select: { productClassDesc: true }
+-        }
+-      },
+-      orderBy: { productId: 'desc' },
+-      skip: offset,
+-      take: l
+-    })
+-  ]);
++  const data = await productService.getAll({
++    search,
++    category,
++    page,
++    limit
++  });
+ 
+-  logger.info(
+-    `Products fetched | page=${p}, limit=${l}, count=${products.length}`
+-  );
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data,
++    message: MESSAGES.PRODUCTS_FETCHED
++  });
++});
+ 
+-  return {
+-    products: products.map(p => ({
+-      PRODUCT_ID: p.productId,
+-      PRODUCT_DESC: p.productDesc,
+-      PRODUCT_CLASS_CODE: p.productClassCode,
+-      PRICE: p.productPrice,
+-      STOCK: p.productQuantityAvail,
+-      PRODUCT_CLASS_DESC: p.productClass?.productClassDesc
+-    })),
+-    total,
+-    page: p,
+-    pages: Math.ceil(total / l)
+-  };
+-};
++exports.getById = asyncHandler(async (req, res) => {
++  const { id } = req.params;
+ 
+-//GET BY ID
++  logger.info(`Fetching product | id=${id}`);
+ 
+-exports.getById = async (productId) => {
+-  const id = toInt(productId);
++  const product = await productService.getById(id);
+ 
+-  const product = await prisma.product.findUnique({
+-    where: { productId: id },
+-    select: {
+-      productId: true,
+-      productDesc: true,
+-      productClassCode: true,
+-      productPrice: true,
+-      productQuantityAvail: true,
+-      productClass: {
+-        select: { productClassDesc: true }
+-      }
+-    }
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data: { product },
++    message: MESSAGES.PRODUCT_FETCHED
+   });
++});
+ 
+-  if (!product) {
+-    logger.warn(`Product not found: ${productId}`);
+-    throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+-  }
+-
+-  return {
+-    PRODUCT_ID: product.productId,
+-    PRODUCT_DESC: product.productDesc,
+-    PRODUCT_CLASS_CODE: product.productClassCode,
+-    PRICE: product.productPrice,
+-    STOCK: product.productQuantityAvail,
+-    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
+-  };
+-};
++exports.getCategories = asyncHandler(async (req, res) => {
++  logger.info(`Fetching product categories`);
+ 
+-//GET CATEGORIES
++  const categories = await productService.getCategories();
+ 
+-exports.getCategories = async () => {
+-  const cats = await prisma.productClass.findMany({
+-    select: {
+-      code: true,
+-      productClassDesc: true,
+-      _count: { select: { products: true } }
+-    },
+-    orderBy: { productClassDesc: 'asc' }
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data: { categories },
++    message: MESSAGES.CATEGORIES_FETCHED
+   });
+-
+-  logger.info(`Categories fetched | count=${cats.length}`);
+-
+-  return cats.map(cat => ({
+-    PRODUCT_CLASS_CODE: cat.code,
+-    PRODUCT_CLASS_DESC: cat.productClassDesc,
+-    COUNT: cat._count.products
+-  }));
+-};
+\ No newline at end of file
++});
+\ No newline at end of file
+diff --git a/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json b/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
+deleted file mode 100644
+index e21c5de..0000000
+--- a/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
++++ /dev/null
+@@ -1,15 +0,0 @@
+-{
+-    "keep": {
+-        "days": true,
+-        "amount": 14
+-    },
+-    "auditLog": "logs\\.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json",
+-    "files": [
+-        {
+-            "date": 1775188377175,
+-            "name": "logs\\combined-2026-04-03.log",
+-            "hash": "695fb7877e0b4f573439e381d0bc0410ee2b3797ab356fad699e9236ab10957d"
+-        }
+-    ],
+-    "hashType": "sha256"
+-}
+\ No newline at end of file
+diff --git a/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json b/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
+deleted file mode 100644
+index 8e02db9..0000000
+--- a/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
++++ /dev/null
+@@ -1,15 +0,0 @@
+-{
+-    "keep": {
+-        "days": true,
+-        "amount": 14
+-    },
+-    "auditLog": "logs\\.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json",
+-    "files": [
+-        {
+-            "date": 1775188377167,
+-            "name": "logs\\error-2026-04-03.log",
+-            "hash": "5d1f89b1d60fb2d8dae1c9adb8f510b81169422f62ee30f1bcb1c21f9378b29f"
+-        }
+-    ],
+-    "hashType": "sha256"
+-}
+\ No newline at end of file
+diff --git a/backend/logs/combined-2026-04-03.log b/backend/logs/combined-2026-04-03.log
+deleted file mode 100644
+index 2434311..0000000
+--- a/backend/logs/combined-2026-04-03.log
++++ /dev/null
+@@ -1,56 +0,0 @@
+-{"level":"info","message":"Orders fetched | userId=1, count=1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Orders fetched | userId=1, count=0","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"warn","message":"Failed login attempt for: test@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Registration failed : User already exists (rama@gmail.com)","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"warn","message":"Product not found : productId=999","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Categories fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Resetting default addresses for user 1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Address created with ID 101 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Address deleted : 1 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:22:57"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:22:58"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:22:58"}
+-{"level":"info","message":"Address created with ID 101 for user undefined","service":"order-management-api","timestamp":"2026-04-03 09:22:58"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:22:58"}
+-{"level":"info","message":"Resetting default addresses for user 1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Address created with ID 101 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Address deleted : 1 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Orders fetched | userId=1, count=1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Orders fetched | userId=1, count=0","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"warn","message":"Failed login attempt for: test@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Registration failed : User already exists (rama@gmail.com)","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"warn","message":"Product not found : productId=999","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Categories fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:34:16"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:34:26"}
+-{"level":"info","message":"Address created with ID 101 for user undefined","service":"order-management-api","timestamp":"2026-04-03 09:34:27"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:34:27"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:34:27"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:43:00"}
+-{"level":"warn","message":"Failed login attempt for: test@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:00"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:00"}
+-{"level":"info","message":"Registration failed: User already exists (rama@gmail.com)","service":"order-management-api","timestamp":"2026-04-03 09:43:00"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:43:01"}
+-{"level":"error","message":"Unhandled/Server Error:  prisma is not defined","service":"order-management-api","stack":"ReferenceError: prisma is not defined\n    at Object.prisma (D:\\Work\\order-management-app\\order-management\\backend\\services\\productService.js:22:5)\n    at getAll (D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6:37)\n    at fn (D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:295:15\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at Function.handle (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:186:3)\n    at router (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:60:12)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at read (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\read.js:53:5)\n    at urlencodedParser (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\types\\urlencoded.js:57:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at read (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\read.js:53:5)\n    at jsonParser (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\types\\json.js:88:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at cors (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:188:7)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:224:17\n    at originCallback (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:214:15)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:219:13\n    at optionsCallback (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:199:9)\n    at corsMiddleware (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:204:7)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-rate-limit\\dist\\index.cjs:947:7\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-rate-limit\\dist\\index.cjs:830:5","timestamp":"2026-04-03 09:43:01"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:01"}
+-{"level":"error","message":"Unhandled/Server Error:  prisma is not defined","service":"order-management-api","stack":"ReferenceError: prisma is not defined\n    at Object.exports.add (D:\\Work\\order-management-app\\order-management\\backend\\services\\addressService.js:49:3)\n    at add (D:\\Work\\order-management-app\\order-management\\backend\\controller\\addressController.js:11:42)\n    at fn (D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\validate.js:16:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at middleware (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-validator\\lib\\middlewares\\check.js:16:13)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-03 09:43:01"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:43:46"}
+-{"level":"warn","message":"Failed login attempt for: test@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:46"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:46"}
+-{"level":"info","message":"Registration failed: User already exists (rama@gmail.com)","service":"order-management-api","timestamp":"2026-04-03 09:43:46"}
+-{"level":"info","message":"Resetting default addresses for user 1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Address created with ID 101 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Address deleted : 1 for user 1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"warn","message":"Product not found: productId=999","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Categories fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Orders fetched | userId=1, count=1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Orders fetched | userId=1, count=0","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Products fetched : count=1","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Address created with ID 101 for user undefined","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Login success: rama@gmail.com (Role: user)","service":"order-management-api","timestamp":"2026-04-03 09:43:47"}
+-{"level":"info","message":"Registered new user: rama@gmail.com","service":"order-management-api","timestamp":"2026-04-03 09:43:48"}
+diff --git a/backend/logs/error-2026-04-03.log b/backend/logs/error-2026-04-03.log
+deleted file mode 100644
+index 09b313c..0000000
+--- a/backend/logs/error-2026-04-03.log
++++ /dev/null
+@@ -1,2 +0,0 @@
+-{"level":"error","message":"Unhandled/Server Error:  prisma is not defined","service":"order-management-api","stack":"ReferenceError: prisma is not defined\n    at Object.prisma (D:\\Work\\order-management-app\\order-management\\backend\\services\\productService.js:22:5)\n    at getAll (D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6:37)\n    at fn (D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:295:15\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at Function.handle (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:186:3)\n    at router (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:60:12)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at read (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\read.js:53:5)\n    at urlencodedParser (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\types\\urlencoded.js:57:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at read (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\read.js:53:5)\n    at jsonParser (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\body-parser\\lib\\types\\json.js:88:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at cors (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:188:7)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:224:17\n    at originCallback (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:214:15)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:219:13\n    at optionsCallback (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:199:9)\n    at corsMiddleware (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\cors\\lib\\index.js:204:7)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:342:13)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:297:9\n    at processParams (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:582:12)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\index.js:291:5)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-rate-limit\\dist\\index.cjs:947:7\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-rate-limit\\dist\\index.cjs:830:5","timestamp":"2026-04-03 09:43:01"}
+-{"level":"error","message":"Unhandled/Server Error:  prisma is not defined","service":"order-management-api","stack":"ReferenceError: prisma is not defined\n    at Object.exports.add (D:\\Work\\order-management-app\\order-management\\backend\\services\\addressService.js:49:3)\n    at add (D:\\Work\\order-management-app\\order-management\\backend\\controller\\addressController.js:11:42)\n    at fn (D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\validate.js:16:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at middleware (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\express-validator\\lib\\middlewares\\check.js:16:13)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-03 09:43:01"}
+diff --git a/backend/logs/rejections.log b/backend/logs/rejections.log
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/backend/logs/exceptions.log b/backend/output.txt
+similarity index 100%
+rename from backend/logs/exceptions.log
+rename to backend/output.txt
+diff --git a/backend/services/addressService.js b/backend/services/addressService.js
+index 9667af1..9ff0723 100644
+--- a/backend/services/addressService.js
++++ b/backend/services/addressService.js
+@@ -4,35 +4,80 @@ const HttpStatus = require('../constants/httpStatus');
+ const AppError = require('../utils/AppError');
+ const ERRORS = require('../constants/errors');
+ 
+-const toInt = (val) => Number(val);
++// safe conversion
++const toInt = (val) => {
++  const n = Number(val);
++  return isNaN(n) ? null : n;
++};
+ 
+-// LIST
++// ================= LIST =================
+ exports.list = async (userId) => {
+   const user = toInt(userId);
+ 
++  if (!user) {
++    logger.warn(`Invalid userId | userId=${userId}`);
++    throw new AppError(ERRORS.INVALID_USER_ID, HttpStatus.BAD_REQUEST);
++  }
++
+   const addresses = await prisma.address.findMany({
+-    where: { customerId: user },
+-    orderBy: [{ isDefault: 'desc' }, { addressId: 'asc' }]
++    where: {
++      customerId: user,
++      isDeleted: false
++    },
++    orderBy: [
++      { isDefault: 'desc' },
++      { addressId: 'asc' }
++    ]
+   });
+ 
+-  logger.info(`Fetched ${addresses.length} addresses for user ${userId}`);
+-
+-  return addresses;
++  logger.info(`Fetched ${addresses.length} addresses | userId=${user}`);
++
++  return addresses.map(addr => ({
++    ADDRESS_ID: addr.addressId,
++    LABEL: addr.label,
++    ADDRESS_LINE1: addr.addressLine1,
++    ADDRESS_LINE2: addr.addressLine2,
++    CITY: addr.city,
++    STATE: addr.state,
++    PINCODE: addr.pincode,
++    COUNTRY: addr.country,
++    IS_DEFAULT: addr.isDefault
++  }));
+ };
+ 
+-// ADD
+-exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefault }) => {
++// ================= ADD =================
++exports.add = async (userId, body) => {
++  const user = toInt(userId);
++
++  if (!user) {
++    logger.warn(`Invalid userId | userId=${userId}`);
++    throw new AppError(ERRORS.INVALID_USER_ID, HttpStatus.BAD_REQUEST);
++  }
++
++  const {
++    label,
++    line1,
++    line2,
++    city,
++    state,
++    pincode,
++    isDefault
++  } = body || {};
++
+   if (!line1 || !city || !pincode) {
+-    logger.warn(`Address creation failed for user ${userId}`);
++    logger.warn(`Address creation failed | userId=${user}`);
+     throw new AppError(ERRORS.ADDRESS_REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
+   }
+ 
+-  const user = toInt(userId);
++  const addressId = await prisma.$transaction(async (tx) => {
+ 
+-  return prisma.$transaction(async (tx) => {
++    // handle default address
+     if (isDefault) {
+       await tx.address.updateMany({
+-        where: { customerId: user },
++        where: {
++          customerId: user,
++          isDeleted: false
++        },
+         data: { isDefault: false }
+       });
+     }
+@@ -48,29 +93,38 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
+         pincode,
+         country: 'India',
+         isDefault: Boolean(isDefault)
+-      }
++      },
++      select: { addressId: true }
+     });
+ 
+-    logger.info(`Address created: ${address.addressId} for user ${userId}`);
+-
+     return address.addressId;
+   });
++
++  logger.info(`Address created | addressId=${addressId}, userId=${user}`);
++
++  return addressId;
+ };
+ 
+-// REMOVE
++// ================= REMOVE =================
+ exports.remove = async (userId, addressId) => {
+   const user = toInt(userId);
+   const addrId = toInt(addressId);
+ 
++  if (!user || !addrId) {
++    logger.warn(`Invalid input | userId=${userId}, addressId=${addressId}`);
++    throw new AppError(ERRORS.INVALID_INPUT, HttpStatus.BAD_REQUEST);
++  }
++
+   const address = await prisma.address.findFirst({
+     where: {
+       addressId: addrId,
+-      customerId: user
++      customerId: user,
++      isDeleted: false
+     }
+   });
+ 
+   if (!address) {
+-    logger.warn(`Address ${addressId} not found for user ${userId}`);
++    logger.warn(`Address not found | addressId=${addrId}, userId=${user}`);
+     throw new AppError(ERRORS.ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
+   }
+ 
+@@ -79,5 +133,5 @@ exports.remove = async (userId, addressId) => {
+     data: { isDeleted: true }
+   });
+ 
+-  logger.info(`Address deleted: ${addressId} for user ${userId}`);
++  logger.info(`Address deleted | addressId=${addrId}, userId=${user}`);
+ };
+\ No newline at end of file
+diff --git a/backend/services/orderService.js b/backend/services/orderService.js
+index 94cfedd..805a611 100644
+--- a/backend/services/orderService.js
++++ b/backend/services/orderService.js
+@@ -51,10 +51,12 @@ exports.aggregateItems = (items) => {
+ };
+ 
+ exports.getShipper = async (tx) => {
+-  return tx.shipper.findFirst({
+-    orderBy: { shipperId: 'asc' },
++  const shippers = await tx.shipper.findMany({
+     select: { shipperId: true }
+   });
++  if (shippers.length === 0) return null;
++  const randomIndex = Math.floor(Math.random() * shippers.length);
++  return shippers[randomIndex];
+ };
+ 
+ // ORDER CREATION
+@@ -90,28 +92,36 @@ exports.createOrderItems = async (tx, orderId, items) => {
+ //  stock validation
+ exports.updateStock = async (tx, items) => {
+   for (const item of items) {
+-    const product = await tx.product.findUnique({
+-      where: { productId: toInt(item.productId) }
+-    });
+-
+-    if (!product || product.productQuantityAvail < item.quantity) {
+-      logger.warn(`Insufficient stock for product ${item.productId}`);
+-      throw new AppError(ERRORS.INSUFFICIENT_STOCK, HttpStatus.BAD_REQUEST);
+-    }
+-
+-    await tx.product.update({
+-      where: { productId: toInt(item.productId) },
++    const result = await tx.product.updateMany({
++      where: {
++        productId: toInt(item.productId),
++        productQuantityAvail: { gte: item.quantity }
++      },
+       data: {
+         productQuantityAvail: {
+           decrement: item.quantity
+         }
+       }
+     });
+-  }
+ 
++    if (result.count === 0) {
++      // Check if product exists to provide specific error message
++      const product = await tx.product.findUnique({
++        where: { productId: toInt(item.productId) }
++      });
++
++      if (!product) {
++        throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
++      } else {
++        logger.warn(`Insufficient stock for product ${item.productId}`);
++        throw new AppError(ERRORS.INSUFFICIENT_STOCK, HttpStatus.BAD_REQUEST);
++      }
++    }
++  }
+   logger.info(`Stock updated`);
+ };
+ 
++
+ // GET USER ORDERS 
+ 
+ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
+@@ -140,15 +150,20 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
+ 
+   logger.info(`Orders fetched | userId=${userId}, count=${orders.length}`);
+ 
+-  const data = orders.map(order => {
++      const data = orders.map(order => {
+     const totalAmount = order.orderItems.reduce((acc, item) =>
+       acc + (Number(item.product.productPrice) * item.productQuantity), 0
+     );
+ 
++    const totalItems = order.orderItems.reduce((acc, item) => acc + item.productQuantity, 0);
++
+     return {
+       ORDER_ID: order.orderId,
++      ORDER_DATE: order.orderDate,
+       STATUS: order.orderStatus,
+-      TOTAL_AMOUNT: totalAmount
++      TOTAL_AMOUNT: totalAmount,
++      ITEMS: totalItems,
++      SHIPPER_NAME: order.shipper?.shipperName || null
+     };
+   });
+ 
+@@ -229,4 +244,51 @@ exports.assignShipper = async (orderId, shipperId) => {
+   });
+ 
+   logger.info(`Shipper ${shipperId} assigned to order ${orderId}`);
+-};
+\ No newline at end of file
++};
++
++exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
++  const p = toInt(page) || 1;
++  const l = toInt(limit) || 10;
++  const skip = (p - 1) * l;
++
++  const [total, orders] = await Promise.all([
++    prisma.orderHeader.count(),
++    prisma.orderHeader.findMany({
++      include: {
++        customer: { select: { username: true, email: true } },
++        shipper: { select: { shipperName: true } },
++        orderItems: {
++          include: {
++            product: { select: { productPrice: true } }
++          }
++        }
++      },
++      orderBy: { orderId: 'desc' },
++      skip,
++      take: l
++    })
++  ]);
++
++  const data = orders.map(order => {
++    const totalAmount = order.orderItems.reduce((acc, item) =>
++      acc + (Number(item.product.productPrice) * item.productQuantity), 0
++    );
++
++    return {
++      ORDER_ID: order.orderId,
++      USERNAME: order.customer?.username ,
++      ORDER_DATE: order.orderDate,
++      STATUS: order.orderStatus,
++      TOTAL_AMOUNT: totalAmount,
++      SHIPPER_NAME: order.shipper?.shipperName
++    };
++  
++  });
++
++  return {
++    orders: data,
++    total,
++    page: p,
++    pages: Math.ceil(total / l)
++  };
++};
+diff --git a/backend/services/productService.js b/backend/services/productService.js
+index 046a87f..e34695d 100644
+--- a/backend/services/productService.js
++++ b/backend/services/productService.js
+@@ -113,6 +113,6 @@ exports.getCategories = async () => {
+   return cats.map(cat => ({
+     PRODUCT_CLASS_CODE: cat.code,
+     PRODUCT_CLASS_DESC: cat.productClassDesc,
+-    COUNT: cat._count.products   // ­ƒöÑ FIX
++    COUNT: cat._count.products   
+   }));
+ };
+\ No newline at end of file
+diff --git a/backend/tests/stockUpdate.test.js b/backend/tests/stockUpdate.test.js
+new file mode 100644
+index 0000000..561d45f
+--- /dev/null
++++ b/backend/tests/stockUpdate.test.js
+@@ -0,0 +1,62 @@
++const orderService = require('../services/orderService');
++const prisma = require('../config/db');
++const AppError = require('../utils/AppError');
++const ERRORS = require('../constants/errors');
++const HttpStatus = require('../constants/httpStatus');
++
++jest.mock('../config/db', () => ({
++  product: {
++    updateMany: jest.fn(),
++    findUnique: jest.fn()
++  }
++}));
++
++describe('Order Service - updateStock', () => {
++  beforeEach(() => {
++    jest.clearAllMocks();
++  });
++
++  it('should decrement stock when sufficient quantity is available', async () => {
++    const tx = prisma;
++    tx.product.updateMany.mockResolvedValue({ count: 1 });
++
++    const items = [{ productId: 1, quantity: 5 }];
++    await orderService.updateStock(tx, items);
++
++    expect(tx.product.updateMany).toHaveBeenCalledWith({
++      where: {
++        productId: 1,
++        productQuantityAvail: { gte: 5 }
++      },
++      data: {
++        productQuantityAvail: { decrement: 5 }
++      }
++    });
++  });
++
++  it('should throw INSUFFICIENT_STOCK error when stock is insufficient', async () => {
++    const tx = prisma;
++    tx.product.updateMany.mockResolvedValue({ count: 0 });
++    tx.product.findUnique.mockResolvedValue({ productId: 1, productQuantityAvail: 3 });
++
++    const items = [{ productId: 1, quantity: 5 }];
++
++    await expect(orderService.updateStock(tx, items))
++      .rejects.toThrow(new AppError(ERRORS.INSUFFICIENT_STOCK, HttpStatus.BAD_REQUEST));
++    
++    expect(tx.product.findUnique).toHaveBeenCalledWith({
++      where: { productId: 1 }
++    });
++  });
++
++  it('should throw PRODUCT_NOT_FOUND error when product does not exist', async () => {
++    const tx = prisma;
++    tx.product.updateMany.mockResolvedValue({ count: 0 });
++    tx.product.findUnique.mockResolvedValue(null);
++
++    const items = [{ productId: 999, quantity: 1 }];
++
++    await expect(orderService.updateStock(tx, items))
++      .rejects.toThrow(new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND));
++  });
++});
+diff --git a/frontend/src/context/CartContext.jsx b/frontend/src/context/CartContext.jsx
+index aa20f41..7219e82 100644
+--- a/frontend/src/context/CartContext.jsx
++++ b/frontend/src/context/CartContext.jsx
+@@ -1,17 +1,22 @@
+ import React, { createContext, useContext, useState, useEffect } from 'react';
+ 
+ const CartContext = createContext();
+-
++  
+ export const CartProvider = ({ children }) => {
+   const [cart, setCart] = useState(() => {
+     const saved = localStorage.getItem('cart');
+     return saved ? JSON.parse(saved) : [];
+   });
+ 
+-  useEffect(() => {
+-    localStorage.setItem('cart', JSON.stringify(cart));
++   useEffect(() => {
++    try {
++      localStorage.setItem('cart', JSON.stringify(cart));
++    } catch (e) {
++      console.error("Failed to save cart to localStorage", e);
++    }
+   }, [cart]);
+ 
++
+   const addToCart = (product) => {
+     setCart(prev => {
+       const existing = prev.find(item => item.PRODUCT_ID === product.PRODUCT_ID);
+diff --git a/reviewreport.txt b/reviewreport.txt
+new file mode 100644
+index 0000000..82cf0da
+--- /dev/null
++++ b/reviewreport.txt
+@@ -0,0 +1,42 @@
++Project Review Report: Order Management System
++Core Features Overview
++Robust Authentication: JWT-based security with clear separation of User and Admin roles.
++Product Catalog: Advanced filtering by category, search functionality, and pagination.
++Checkout Flow: Integrated cart management, address validation (with soft delete), and multi-step checkout.
++Admin Command Center: Centralized dashboard for managing orders, assigning shippers, and tracking statuses.
++Resilient Infrastructure: Automated Winston logging with daily rotation and a standardized 
++AppError
++ architecture.
++Technical Strengths
++Clean Architecture: Excellent use of the "Controller -> Manager -> Service" pattern, ensuring high maintainability and testability.
++State Management: Effective use of React Context for global state (Auth, Cart), providing a smooth user experience.
++Modern Styling: Professional "Glassmorphism" UI with responsive layouts tailored for both desktop and mobile.
++Safety First: Strong request validation using express-validator protecting the database layer.
++Identified Risks & Bugs
++1. Stock Race Condition
++WARNING
++
++While stock is checked before decrementing, high-concurrency environments could still face race conditions where stock drops below zero. Recommendation: Implement atomic decrements with a where clause (e.g., where: { productId, productQuantityAvail: { gte: quantity } }).
++
++2. Frontend State Volatility
++NOTE
++
++The shopping cart currently appears to be stored in-memory (Context). This means users lose their cart on page refresh. Recommendation: Sync the cart state with localStorage.
++
++3. BigInt Serialization
++IMPORTANT
++
++Some database fields (like shipperPhone) use BigInt, which natively crashes during JSON serialization. Status: This has been patched in the service layer during recent refactoring.
++
++Strategic Recommendations
++Feature Enhancements
++API Documentation: Integrate Swagger/OpenAPI to provide interactive documentation for frontend developers.
++Image Integration: Transition from text-based products to visual tiles by integrating S3 or Cloudinary for product images.
++Email Service: Implement Nodemailer or SendGrid to notify users of order status changes (Shipped, Delivered).
++Developer Experience (DX)
++Environment Validation: Use Joi or Zod to validate 
++.env
++ variables at startup.
++Frontend Testing: Add E2E testing (Cypress/Playwright) to complement the existing backend test suite.
++CI/CD: Set up a GitHub Action to automate tests and linting on every push.
++Verdict: The project is in a highly stable, professional state with a very clean code structure. Implementing the above suggestions would elevate it to a production-ready enterprise application.
+\ No newline at end of file

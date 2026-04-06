@@ -1,0 +1,235 @@
+﻿diff --git a/.gitignore b/.gitignore
+index 3e4f2f6..febcc6f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -18,3 +18,6 @@ backend/node_modules/
+ **/.env
+ server.log
+ backend/server.log
++logs/
++backend/logs/
++*.log
+diff --git a/backend/constants/messages.js b/backend/constants/messages.js
+index e5f7fe0..5c3ba53 100644
+--- a/backend/constants/messages.js
++++ b/backend/constants/messages.js
+@@ -16,6 +16,11 @@ const MESSAGES = {
+     SHIPPER_CREATED: "Shipper added successfully",
+   SHIPPER_UPDATED: "Shipper updated successfully",
+   SHIPPER_DELETED: "Shipper removed successfully"
++  },
++  PRODUCT : {
++    PRODUCTS_FETCHED: "Products fetched successfully",
++    PRODUCT_FETCHED: "Product fetched successfully",
++    CATEGORIES_FETCHED: "Categories fetched successfully"
+   }
+ };
+ 
+diff --git a/backend/controller/productController.js b/backend/controller/productController.js
+index 7859fc2..4405385 100644
+--- a/backend/controller/productController.js
++++ b/backend/controller/productController.js
+@@ -1,121 +1,53 @@
+-const prisma = require('../config/db');
+-const logger = require('../utils/logger');
++const asyncHandler = require('../utils/asyncHandler');
++const productService = require('../services/productService');
+ const HttpStatus = require('../constants/httpStatus');
+-const AppError = require('../utils/AppError');
+-const ERRORS = require('../constants/errors');
+-
+-const toInt = (val, def = 0) => Number(val) || def;
++const logger = require('../utils/logger');
++const MESSAGES = require('../constants/messages');
+ 
+ // GET ALL
++exports.getAll = asyncHandler(async (req, res) => {
++  const { page, limit, search, category } = req.query;
+ 
+-exports.getAll = async ({ search, category, page = 1, limit = 12 }) => {
+-  const p = Math.max(toInt(page, 1), 1);
+-  const l = Math.max(toInt(limit, 12), 1);
+-  const offset = (p - 1) * l;
+-
+-  const where = {};
+-
+-  if (search) {
+-    where.productDesc = {
+-      contains: search,
+-      mode: 'insensitive'  
+-    };
+-  }
+-
+-  if (category) {
+-    where.productClassCode = toInt(category);
+-  }
++  logger.info(`Fetching products | page=${page}, limit=${limit}`);
+ 
+-  const [total, products] = await Promise.all([
+-    prisma.product.count({ where }),
+-    prisma.product.findMany({
+-      where,
+-      select: {
+-        productId: true,
+-        productDesc: true,
+-        productClassCode: true,
+-        productPrice: true,
+-        productQuantityAvail: true,
+-        productClass: {
+-          select: { productClassDesc: true }
+-        }
+-      },
+-      orderBy: { productId: 'desc' },
+-      skip: offset,
+-      take: l
+-    })
+-  ]);
++  const data = await productService.getAll({
++    search,
++    category,
++    page,
++    limit
++  });
+ 
+-  logger.info(
+-    `Products fetched | page=${p}, limit=${l}, count=${products.length}`
+-  );
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data,
++    message: MESSAGES.PRODUCT.PRODUCTS_FETCHED
++  });
++});
+ 
+-  return {
+-    products: products.map(p => ({
+-      PRODUCT_ID: p.productId,
+-      PRODUCT_DESC: p.productDesc,
+-      PRODUCT_CLASS_CODE: p.productClassCode,
+-      PRICE: p.productPrice,
+-      STOCK: p.productQuantityAvail,
+-      PRODUCT_CLASS_DESC: p.productClass?.productClassDesc
+-    })),
+-    total,
+-    page: p,
+-    pages: Math.ceil(total / l)
+-  };
+-};
++// GET BY ID
++exports.getById = asyncHandler(async (req, res) => {
++  const { id } = req.params;
+ 
+-//GET BY ID
++  logger.info(`Fetching product | id=${id}`);
+ 
+-exports.getById = async (productId) => {
+-  const id = toInt(productId);
++  const product = await productService.getById(id);
+ 
+-  const product = await prisma.product.findUnique({
+-    where: { productId: id },
+-    select: {
+-      productId: true,
+-      productDesc: true,
+-      productClassCode: true,
+-      productPrice: true,
+-      productQuantityAvail: true,
+-      productClass: {
+-        select: { productClassDesc: true }
+-      }
+-    }
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data: { product },
++    message: MESSAGES.PRODUCT.PRODUCT_FETCHED
+   });
++});
+ 
+-  if (!product) {
+-    logger.warn(`Product not found: ${productId}`);
+-    throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+-  }
+-
+-  return {
+-    PRODUCT_ID: product.productId,
+-    PRODUCT_DESC: product.productDesc,
+-    PRODUCT_CLASS_CODE: product.productClassCode,
+-    PRICE: product.productPrice,
+-    STOCK: product.productQuantityAvail,
+-    PRODUCT_CLASS_DESC: product.productClass?.productClassDesc
+-  };
+-};
++// GET CATEGORIES
++exports.getCategories = asyncHandler(async (req, res) => {
++  logger.info(`Fetching product categories`);
+ 
+-//GET CATEGORIES
++  const categories = await productService.getCategories();
+ 
+-exports.getCategories = async () => {
+-  const cats = await prisma.productClass.findMany({
+-    select: {
+-      code: true,
+-      productClassDesc: true,
+-      _count: { select: { products: true } }
+-    },
+-    orderBy: { productClassDesc: 'asc' }
++  res.status(HttpStatus.OK).json({
++    success: true,
++    data: { categories },
++    message: MESSAGES.PRODUCT.CATEGORIES_FETCHED
+   });
+-
+-  logger.info(`Categories fetched | count=${cats.length}`);
+-
+-  return cats.map(cat => ({
+-    PRODUCT_CLASS_CODE: cat.code,
+-    PRODUCT_CLASS_DESC: cat.productClassDesc,
+-    COUNT: cat._count.products
+-  }));
+-};
+\ No newline at end of file
++});
+diff --git a/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json b/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
+index e21c5de..d1dcf0b 100644
+--- a/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
++++ b/backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
+@@ -9,6 +9,11 @@
+             "date": 1775188377175,
+             "name": "logs\\combined-2026-04-03.log",
+             "hash": "695fb7877e0b4f573439e381d0bc0410ee2b3797ab356fad699e9236ab10957d"
++        },
++        {
++            "date": 1775470720576,
++            "name": "logs\\combined-2026-04-06.log",
++            "hash": "9e6df154d699ab473a335503a4f3d4cbf007ebfef72da7e62fb9f3fddf796bd3"
+         }
+     ],
+     "hashType": "sha256"
+diff --git a/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json b/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
+index 8e02db9..6ace0ce 100644
+--- a/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
++++ b/backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
+@@ -9,6 +9,11 @@
+             "date": 1775188377167,
+             "name": "logs\\error-2026-04-03.log",
+             "hash": "5d1f89b1d60fb2d8dae1c9adb8f510b81169422f62ee30f1bcb1c21f9378b29f"
++        },
++        {
++            "date": 1775470720571,
++            "name": "logs\\error-2026-04-06.log",
++            "hash": "52bc61e3e4fcc9f38bc07e855eb7edebce45ec962863a53ec68f0eb42de74bcb"
+         }
+     ],
+     "hashType": "sha256"
+diff --git a/backend/logs/exceptions.log b/backend/logs/exceptions.log
+index e69de29..bf75de0 100644
+--- a/backend/logs/exceptions.log
++++ b/backend/logs/exceptions.log
+@@ -0,0 +1,6 @@
++{"date":"Mon Apr 06 2026 16:06:36 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: Missing initializer in const declaration\nD:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst M\n      ^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","os":{"loadavg":[0,0,0],"uptime":891835.859},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":33800192,"heapUsed":17387656,"rss":59822080},"pid":16236,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst M\n      ^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","timestamp":"2026-04-06 16:06:36","trace":[{"column":18,"file":"node:internal/modules/cjs/loader","function":"wrapSafe","line":1638,"method":null,"native":false},{"column":20,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1680,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":27,"file":"D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js","function":null,"line":3,"method":null,"native":false}]}
++{"date":"Mon Apr 06 2026 16:06:38 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: Missing initializer in const declaration\nD:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGES\n      ^^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","os":{"loadavg":[0,0,0],"uptime":891837.312},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":34062336,"heapUsed":17402256,"rss":62238720},"pid":12588,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGES\n      ^^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","timestamp":"2026-04-06 16:06:38","trace":[{"column":18,"file":"node:internal/modules/cjs/loader","function":"wrapSafe","line":1638,"method":null,"native":false},{"column":20,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1680,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":27,"file":"D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js","function":null,"line":3,"method":null,"native":false}]}
++{"date":"Mon Apr 06 2026 16:06:39 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: Missing initializer in const declaration\nD:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGES \n      ^^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","os":{"loadavg":[0,0,0],"uptime":891838.593},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":34062336,"heapUsed":17378936,"rss":59842560},"pid":14412,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGES \n      ^^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","timestamp":"2026-04-06 16:06:39","trace":[{"column":18,"file":"node:internal/modules/cjs/loader","function":"wrapSafe","line":1638,"method":null,"native":false},{"column":20,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1680,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":27,"file":"D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js","function":null,"line":3,"method":null,"native":false}]}
++{"date":"Mon Apr 06 2026 16:06:42 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: Missing initializer in const declaration\nD:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGE\n      ^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","os":{"loadavg":[0,0,0],"uptime":891841.781},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":34062336,"heapUsed":17414104,"rss":59543552},"pid":12532,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:6\nconst MESSAGE\n      ^^^^^^^\n\nSyntaxError: Missing initializer in const declaration\n    at wrapSafe (node:internal/modules/cjs/loader:1638:18)\n    at Module._compile (node:internal/modules/cjs/loader:1680:20)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js:3:27)","timestamp":"2026-04-06 16:06:42","trace":[{"column":18,"file":"node:internal/modules/cjs/loader","function":"wrapSafe","line":1638,"method":null,"native":false},{"column":20,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1680,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":27,"file":"D:\\Work\\order-management-app\\order-management\\backend\\routes\\products.js","function":null,"line":3,"method":null,"native":false}]}
++{"date":"Mon Apr 06 2026 16:10:22 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: P is not defined\nReferenceError: P is not defined\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js:20:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js:1:21)","os":{"loadavg":[0,0,0],"uptime":892061.531},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":34062336,"heapUsed":16218272,"rss":62951424},"pid":30920,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"ReferenceError: P is not defined\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js:20:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js:1:21)","timestamp":"2026-04-06 16:10:22","trace":[{"column":3,"file":"D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js","function":null,"line":20,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1706,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":21,"file":"D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js","function":null,"line":1,"method":null,"native":false}]}
++{"date":"Mon Apr 06 2026 16:10:35 GMT+0530 (India Standard Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: PRODUCT is not defined\nReferenceError: PRODUCT is not defined\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js:20:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js:1:21)","os":{"loadavg":[0,0,0],"uptime":892074.265},"process":{"argv":["D:\\Program Files\\nodejs\\node.exe","D:\\Work\\order-management-app\\order-management\\backend\\app.js"],"cwd":"D:\\Work\\order-management-app\\order-management\\backend","execPath":"D:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18811,"external":2234774,"heapTotal":33800192,"heapUsed":16219808,"rss":62832640},"pid":19408,"uid":null,"version":"v22.19.0"},"service":"order-management-api","stack":"ReferenceError: PRODUCT is not defined\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js:20:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Module.require (node:internal/modules/cjs/loader:1463:12)\n    at require (node:internal/modules/helpers:147:16)\n    at Object.<anonymous> (D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js:1:21)","timestamp":"2026-04-06 16:10:35","trace":[{"column":3,"file":"D:\\Work\\order-management-app\\order-management\\backend\\constants\\messages.js","function":null,"line":20,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1706,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1839,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1441,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Function._load","line":1263,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":322,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":237,"method":null,"native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1463,"method":"require","native":false},{"column":16,"file":"node:internal/modules/helpers","function":"require","line":147,"method":null,"native":false},{"column":21,"file":"D:\\Work\\order-management-app\\order-management\\backend\\constants\\errors.js","function":null,"line":1,"method":null,"native":false}]}

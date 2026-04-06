@@ -16,6 +16,11 @@ const MESSAGES = {
     SHIPPER_CREATED: "Shipper added successfully",
   SHIPPER_UPDATED: "Shipper updated successfully",
   SHIPPER_DELETED: "Shipper removed successfully"
+  },
+  PRODUCT : {
+    PRODUCTS_FETCHED: "Products fetched successfully",
+    PRODUCT_FETCHED: "Product fetched successfully",
+    CATEGORIES_FETCHED: "Categories fetched successfully"
   }
 };
 

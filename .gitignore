@@ -18,3 +18,6 @@ backend/node_modules/
 **/.env
 server.log
 backend/server.log
+logs/
+backend/logs/
+*.log

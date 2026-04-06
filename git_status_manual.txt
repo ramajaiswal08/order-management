@@ -1,0 +1,21 @@
+﻿On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitignore
+	modified:   backend/constants/messages.js
+	modified:   backend/controller/productController.js
+	modified:   backend/logs/.9b91393ad778cf5b753ba5fe8e25485c9f75419f-audit.json
+	modified:   backend/logs/.f309c0a64ae23cd50e3a2cef7bb3bf0a435e901a-audit.json
+	modified:   backend/logs/exceptions.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	current_git_state.txt
+	diff.txt
+	git_status_manual.txt
+	merge_output.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
