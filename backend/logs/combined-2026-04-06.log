@@ -1,0 +1,645 @@
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 12:21:43"}
+{"level":"warn","message":"Insufficient stock for product 1","service":"order-management-api","timestamp":"2026-04-06 12:21:43"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 12:22:26"}
+{"level":"warn","message":"Insufficient stock for product 1","service":"order-management-api","timestamp":"2026-04-06 12:22:26"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 12:23:15"}
+{"level":"warn","message":"Insufficient stock for product 1","service":"order-management-api","timestamp":"2026-04-06 12:23:15"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 12:23:30"}
+{"level":"warn","message":"Insufficient stock for product 1","service":"order-management-api","timestamp":"2026-04-06 12:23:30"}
+{"level":"info","message":"Orders fetched | userId=1, count=1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Orders fetched | userId=1, count=0","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Address created: 101 for user 1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Address deleted: 1 for user 1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"warn","message":"Insufficient stock for product 1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"warn","message":"Product not found: 999","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"Categories fetched | count=1","service":"order-management-api","timestamp":"2026-04-06 12:26:45"}
+{"level":"info","message":"User login attempt: admin@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:28:10"}
+{"level":"warn","message":"Invalid login attempt: admin@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:28:10"}
+{"level":"warn","message":"Operational Error [401]: ","service":"order-management-api","timestamp":"2026-04-06 13:28:10"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:28:16"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:28:16"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:28:19"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:28:19"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:28:34"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:28:34"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:28:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:28:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:28:55"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:28:55"}
+{"level":"info","message":"User login attempt: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Login success: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:05"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:06"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:07"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:12"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:14"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:29:15"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:17"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:17"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:18"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:18"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:18"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:18"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:19"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:19"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:19"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:19"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:29:19"}
+{"level":"error","message":"Unhandled/Server Error:  orderService.getAllOrders is not a function","service":"order-management-api","stack":"TypeError: orderService.getAllOrders is not a function\n    at exports.getAllOrders (D:\\Work\\order-management-app\\order-management\\backend\\manager\\orderManager.js:60:29)\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\orderController.js:59:35\n    at D:\\Work\\order-management-app\\order-management\\backend\\utils\\asyncHandler.js:9:19\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\adminOnly.js:7:3)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\route.js:157:13)\n    at module.exports (D:\\Work\\order-management-app\\order-management\\backend\\middleware\\auth.js:10:5)\n    at Layer.handleRequest (D:\\Work\\order-management-app\\order-management\\backend\\node_modules\\router\\lib\\layer.js:152:17)","timestamp":"2026-04-06 13:29:19"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:33:58"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 13:33:59"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:47:45"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:47:45"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:47:49"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:47:49"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:48:04"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:48:04"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:48:24"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:48:24"}
+{"level":"info","message":"User login attempt: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:48:43"}
+{"level":"info","message":"Login success: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:48:43"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:49:03"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:49:03"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:48"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:49"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:49"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:49"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:52:49"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:52:49"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:52:50"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:52:51"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:52:52"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:52:53"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:53:08"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:09"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:09"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:10"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:10"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:53:10"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:53:10"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:53:20"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 13:53:40"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 13:53:40"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:00:45"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:00:46"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:00:55"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:01"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:01"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:01"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:01"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:04"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:05"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetching addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetched 2 addresses for user 4","service":"order-management-api","timestamp":"2026-04-06 14:01:11"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:40"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:05:41"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:41"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:05:41"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:05:41"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:05:41"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:46"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:05:46"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:46"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:05:46"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:50"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:50"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:51"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:51"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:51"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:53"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:53"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:55"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:55"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:56"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:56"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:21:14","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:05:58"}
+{"level":"error","message":"Unhandled/Server Error:  MESSAGES is not defined","service":"order-management-api","stack":"ReferenceError: MESSAGES is not defined\n    at D:\\Work\\order-management-app\\order-management\\backend\\controller\\productController.js:47:14","timestamp":"2026-04-06 14:05:58"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:07:38"}
+{"level":"info","message":"User login attempt: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Login success: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 14:07:44"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:07:54"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:07:54"}
+{"level":"warn","message":"Address creation failed for user [object Object]","service":"order-management-api","timestamp":"2026-04-06 14:08:07"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:08:07"}
+{"level":"warn","message":"Address creation failed for user [object Object]","service":"order-management-api","timestamp":"2026-04-06 14:08:12"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:08:12"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 14:18:05"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:18:05"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:18:06"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:21:01"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:21:02"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:21:02"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:21:02"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:21:02"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:21:02"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:23:50"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:24:59"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:30:09"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:30:09"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:30:09"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:30:09"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:30:11"}
+{"level":"warn","message":"Operational Error [400]: ","service":"order-management-api","timestamp":"2026-04-06 14:30:11"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:33:56"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 14:34:03"}
+{"level":"info","message":"Creating order for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Order header created: 10198","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Order items created | orderId=10198","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Order created: 10198 for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:06"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:16"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:16"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:34:19"}
+{"level":"warn","message":"Updating order 10198 status","service":"order-management-api","timestamp":"2026-04-06 14:34:23"}
+{"level":"info","message":"Order 10198 updated to delivered","service":"order-management-api","timestamp":"2026-04-06 14:34:23"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:34:23"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:27"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:27"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:36"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:36"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:34:57"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:34:57"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:07"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:07"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:17"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:17"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:27"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:27"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:37"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:37"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:35:57"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:35:57"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:36:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:36:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:37:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:37:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:38:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:38:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:39:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:39:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:40:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:40:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:41:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:41:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:42:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:42:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:43:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:43:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:44:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:44:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:45:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:45:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:47:38"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:47:38"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:47:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:47:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:47:57"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:47:57"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:48:07"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:48:07"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:48:17"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:48:17"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:26"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:26"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:26"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:48:27"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:48:27"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:27"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:27"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:27"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:28"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:28"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:28"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:29"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:29"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:29"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:30"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:31"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:48:31"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:48:31"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:48:37"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:48:37"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:48:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:48:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:49:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:49:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:50:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:50:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:51:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:51:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:52:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:52:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:53:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:53:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:54:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:54:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:55:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:55:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:56:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:56:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:57:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:57:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:58:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:58:47"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 14:59:26"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 14:59:26"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 14:59:27"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 14:59:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 14:59:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:37"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:00:37"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:00:38"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetching profile for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetched user: ramajaiswal829111@gmail.com","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:00:44"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:00:55"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:00:55"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:01"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:04"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:01:04"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:04"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:05"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:05"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:05"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:01:05"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:05"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:01:06"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:06"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:01:06"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:15"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:15"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:25"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:25"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:35"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:35"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:45"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:45"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:01:55"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:01:55"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:02:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:02:47"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetching profile for user 2","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetched user: admin@example.com","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:19"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:22"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:22"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:22"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:23"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:23"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:23"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Admin fetching all orders","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Fetching all shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Fetched 6 shippers","service":"order-management-api","timestamp":"2026-04-06 15:03:27"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:03:32"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:03:32"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:03:34"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:03:34"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:03:34"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:03:34"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Fetching products | page=1, limit=12","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Products fetched | page=1, limit=12, count=12","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Fetching product categories","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Categories fetched | count=14","service":"order-management-api","timestamp":"2026-04-06 15:03:35"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:47"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:47"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:47"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:47"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:59"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:59"}
+{"level":"info","message":"Fetching addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:59"}
+{"level":"info","message":"Fetched 2 addresses | userId=4","service":"order-management-api","timestamp":"2026-04-06 15:03:59"}
+{"level":"info","message":"Creating order for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Order header created: 10199","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Order items created | orderId=10199","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Stock updated","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Order created: 10199 for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:03"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:13"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:13"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:23"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:23"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:34"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:34"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:44"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:44"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:04:54"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:04:54"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:05:04"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:05:04"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:05:14"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:05:14"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:05:24"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:05:24"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:05:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:05:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:06:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:06:47"}
+{"level":"info","message":"Fetching orders for user 4","service":"order-management-api","timestamp":"2026-04-06 15:07:47"}
+{"level":"info","message":"Orders fetched | userId=4, count=10","service":"order-management-api","timestamp":"2026-04-06 15:07:47"}

@@ -5,9 +5,11 @@ const logger = require('../utils/logger');
 const MESSAGES = require('../constants/messages');
 
 exports.list = asyncHandler(async (req, res) => {
-  logger.info(`Fetching addresses for user ${req.user.id}`);
+  const userId = req.user?.id;
 
-  const addresses = await addressService.list(req.user.id);
+  logger.info(`Fetching addresses | userId=${userId}`);
+
+  const addresses = await addressService.list(userId);
 
   res.status(HttpStatus.OK).json({
     success: true,
@@ -16,9 +18,11 @@ exports.list = asyncHandler(async (req, res) => {
 });
 
 exports.add = asyncHandler(async (req, res) => {
-  logger.info(`Adding address for user ${req.user.id}`);
+  const userId = req.user?.id;
 
-  const addressId = await addressService.add(req.user.id, req.body);
+  logger.info(`Adding address | userId=${userId}`);
+
+  const addressId = await addressService.add(userId, req.body);
 
   res.status(HttpStatus.CREATED).json({
     success: true,
@@ -28,9 +32,12 @@ exports.add = asyncHandler(async (req, res) => {
 });
 
 exports.remove = asyncHandler(async (req, res) => {
-  logger.warn(`Deleting address ${req.params.id} by user ${req.user.id}`);
+  const userId = req.user?.id;
+  const addressId = req.params.id;
 
-  await addressService.remove(req.user.id, req.params.id);
+  logger.info(`Deleting address | addressId=${addressId}, userId=${userId}`);
+
+  await addressService.remove(userId, addressId);
 
   res.status(HttpStatus.OK).json({
     success: true,

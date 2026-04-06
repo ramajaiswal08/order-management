@@ -4,35 +4,80 @@ const HttpStatus = require('../constants/httpStatus');
 const AppError = require('../utils/AppError');
 const ERRORS = require('../constants/errors');
 
-const toInt = (val) => Number(val);
+// safe conversion
+const toInt = (val) => {
+  const n = Number(val);
+  return isNaN(n) ? null : n;
+};
 
-// LIST
+// ================= LIST =================
 exports.list = async (userId) => {
   const user = toInt(userId);
 
+  if (!user) {
+    logger.warn(`Invalid userId | userId=${userId}`);
+    throw new AppError(ERRORS.INVALID_USER_ID, HttpStatus.BAD_REQUEST);
+  }
+
   const addresses = await prisma.address.findMany({
-    where: { customerId: user },
-    orderBy: [{ isDefault: 'desc' }, { addressId: 'asc' }]
+    where: {
+      customerId: user,
+      isDeleted: false
+    },
+    orderBy: [
+      { isDefault: 'desc' },
+      { addressId: 'asc' }
+    ]
   });
 
-  logger.info(`Fetched ${addresses.length} addresses for user ${userId}`);
+  logger.info(`Fetched ${addresses.length} addresses | userId=${user}`);
 
-  return addresses;
+  return addresses.map(addr => ({
+    ADDRESS_ID: addr.addressId,
+    LABEL: addr.label,
+    ADDRESS_LINE1: addr.addressLine1,
+    ADDRESS_LINE2: addr.addressLine2,
+    CITY: addr.city,
+    STATE: addr.state,
+    PINCODE: addr.pincode,
+    COUNTRY: addr.country,
+    IS_DEFAULT: addr.isDefault
+  }));
 };
 
-// ADD
-exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefault }) => {
+// ================= ADD =================
+exports.add = async (userId, body) => {
+  const user = toInt(userId);
+
+  if (!user) {
+    logger.warn(`Invalid userId | userId=${userId}`);
+    throw new AppError(ERRORS.INVALID_USER_ID, HttpStatus.BAD_REQUEST);
+  }
+
+  const {
+    label,
+    line1,
+    line2,
+    city,
+    state,
+    pincode,
+    isDefault
+  } = body || {};
+
   if (!line1 || !city || !pincode) {
-    logger.warn(`Address creation failed for user ${userId}`);
+    logger.warn(`Address creation failed | userId=${user}`);
     throw new AppError(ERRORS.ADDRESS_REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
   }
 
-  const user = toInt(userId);
+  const addressId = await prisma.$transaction(async (tx) => {
 
-  return prisma.$transaction(async (tx) => {
+    // handle default address
     if (isDefault) {
       await tx.address.updateMany({
-        where: { customerId: user },
+        where: {
+          customerId: user,
+          isDeleted: false
+        },
         data: { isDefault: false }
       });
     }
@@ -48,29 +93,38 @@ exports.add = async (userId, { label, line1, line2, city, state, pincode, isDefa
         pincode,
         country: 'India',
         isDefault: Boolean(isDefault)
-      }
+      },
+      select: { addressId: true }
     });
-
-    logger.info(`Address created: ${address.addressId} for user ${userId}`);
 
     return address.addressId;
   });
+
+  logger.info(`Address created | addressId=${addressId}, userId=${user}`);
+
+  return addressId;
 };
 
-// REMOVE
+// ================= REMOVE =================
 exports.remove = async (userId, addressId) => {
   const user = toInt(userId);
   const addrId = toInt(addressId);
 
+  if (!user || !addrId) {
+    logger.warn(`Invalid input | userId=${userId}, addressId=${addressId}`);
+    throw new AppError(ERRORS.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+  }
+
   const address = await prisma.address.findFirst({
     where: {
       addressId: addrId,
-      customerId: user
+      customerId: user,
+      isDeleted: false
     }
   });
 
   if (!address) {
-    logger.warn(`Address ${addressId} not found for user ${userId}`);
+    logger.warn(`Address not found | addressId=${addrId}, userId=${user}`);
     throw new AppError(ERRORS.ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
@@ -79,5 +133,5 @@ exports.remove = async (userId, addressId) => {
     data: { isDeleted: true }
   });
 
-  logger.info(`Address deleted: ${addressId} for user ${userId}`);
+  logger.info(`Address deleted | addressId=${addrId}, userId=${user}`);
 };
