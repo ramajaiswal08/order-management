@@ -113,6 +113,6 @@ exports.getCategories = async () => {
   return cats.map(cat => ({
     PRODUCT_CLASS_CODE: cat.code,
     PRODUCT_CLASS_DESC: cat.productClassDesc,
-    COUNT: cat._count.products   // 🔥 FIX
+    COUNT: cat._count.products   
   }));
 };

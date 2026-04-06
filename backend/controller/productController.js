@@ -4,11 +4,11 @@ const HttpStatus = require('../constants/httpStatus');
 const logger = require('../utils/logger');
 const MESSAGES = require('../constants/messages');
 
-// GET ALL
 exports.getAll = asyncHandler(async (req, res) => {
   const { page, limit, search, category } = req.query;
 
   logger.info(`Fetching products | page=${page}, limit=${limit}`);
+
 
   const data = await productService.getAll({
     search,
@@ -20,11 +20,11 @@ exports.getAll = asyncHandler(async (req, res) => {
   res.status(HttpStatus.OK).json({
     success: true,
     data,
-    message: MESSAGES.PRODUCT.PRODUCTS_FETCHED
+    message: MESSAGES.PRODUCTS_FETCHED
   });
 });
 
-// GET BY ID
+
 exports.getById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -51,3 +51,4 @@ exports.getCategories = asyncHandler(async (req, res) => {
     message: MESSAGES.PRODUCT.CATEGORIES_FETCHED
   });
 });
+

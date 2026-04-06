@@ -51,10 +51,12 @@ exports.aggregateItems = (items) => {
 };
 
 exports.getShipper = async (tx) => {
-  return tx.shipper.findFirst({
-    orderBy: { shipperId: 'asc' },
+  const shippers = await tx.shipper.findMany({
     select: { shipperId: true }
   });
+  if (shippers.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * shippers.length);
+  return shippers[randomIndex];
 };
 
 // ORDER CREATION
@@ -90,27 +92,35 @@ exports.createOrderItems = async (tx, orderId, items) => {
 //  stock validation
 exports.updateStock = async (tx, items) => {
   for (const item of items) {
-    const product = await tx.product.findUnique({
-      where: { productId: toInt(item.productId) }
-    });
-
-    if (!product || product.productQuantityAvail < item.quantity) {
-      logger.warn(`Insufficient stock for product ${item.productId}`);
-      throw new AppError(ERRORS.INSUFFICIENT_STOCK, HttpStatus.BAD_REQUEST);
-    }
-
-    await tx.product.update({
-      where: { productId: toInt(item.productId) },
+    const result = await tx.product.updateMany({
+      where: {
+        productId: toInt(item.productId),
+        productQuantityAvail: { gte: item.quantity }
+      },
       data: {
         productQuantityAvail: {
           decrement: item.quantity
         }
       }
     });
-  }
 
+    if (result.count === 0) {
+      // Check if product exists to provide specific error message
+      const product = await tx.product.findUnique({
+        where: { productId: toInt(item.productId) }
+      });
+
+      if (!product) {
+        throw new AppError(ERRORS.PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+      } else {
+        logger.warn(`Insufficient stock for product ${item.productId}`);
+        throw new AppError(ERRORS.INSUFFICIENT_STOCK, HttpStatus.BAD_REQUEST);
+      }
+    }
+  }
   logger.info(`Stock updated`);
 };
+
 
 // GET USER ORDERS 
 
@@ -140,15 +150,20 @@ exports.getUserOrders = async (userId, { page = 1, limit = 10 } = {}) => {
 
   logger.info(`Orders fetched | userId=${userId}, count=${orders.length}`);
 
-  const data = orders.map(order => {
+      const data = orders.map(order => {
     const totalAmount = order.orderItems.reduce((acc, item) =>
       acc + (Number(item.product.productPrice) * item.productQuantity), 0
     );
 
+    const totalItems = order.orderItems.reduce((acc, item) => acc + item.productQuantity, 0);
+
     return {
       ORDER_ID: order.orderId,
+      ORDER_DATE: order.orderDate,
       STATUS: order.orderStatus,
-      TOTAL_AMOUNT: totalAmount
+      TOTAL_AMOUNT: totalAmount,
+      ITEMS: totalItems,
+      SHIPPER_NAME: order.shipper?.shipperName || null
     };
   });
 
@@ -229,4 +244,51 @@ exports.assignShipper = async (orderId, shipperId) => {
   });
 
   logger.info(`Shipper ${shipperId} assigned to order ${orderId}`);
+};
+
+exports.getAllOrders = async ({ page = 1, limit = 10 } = {}) => {
+  const p = toInt(page) || 1;
+  const l = toInt(limit) || 10;
+  const skip = (p - 1) * l;
+
+  const [total, orders] = await Promise.all([
+    prisma.orderHeader.count(),
+    prisma.orderHeader.findMany({
+      include: {
+        customer: { select: { username: true, email: true } },
+        shipper: { select: { shipperName: true } },
+        orderItems: {
+          include: {
+            product: { select: { productPrice: true } }
+          }
+        }
+      },
+      orderBy: { orderId: 'desc' },
+      skip,
+      take: l
+    })
+  ]);
+
+  const data = orders.map(order => {
+    const totalAmount = order.orderItems.reduce((acc, item) =>
+      acc + (Number(item.product.productPrice) * item.productQuantity), 0
+    );
+
+    return {
+      ORDER_ID: order.orderId,
+      USERNAME: order.customer?.username ,
+      ORDER_DATE: order.orderDate,
+      STATUS: order.orderStatus,
+      TOTAL_AMOUNT: totalAmount,
+      SHIPPER_NAME: order.shipper?.shipperName
+    };
+  
+  });
+
+  return {
+    orders: data,
+    total,
+    page: p,
+    pages: Math.ceil(total / l)
+  };
 };
